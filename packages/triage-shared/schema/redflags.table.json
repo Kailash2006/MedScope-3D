@@ -12,7 +12,8 @@
     { "band": "older_adult",  "min_years": 65, "max_years": 130 }
   ],
   "strictest_band": "infant",
-  "missing_age_policy": "use_strictest_band",
+  "missing_age_policy": "most_sensitive_threshold_per_rule",
+  "missing_age_policy_note": "When age is unknown, each vitals rule uses its most sensitive threshold across all bands (min for '>'/'>=' rules, max for '<' rules) so a missing age never makes evaluation less conservative. A single 'strictest band' cannot satisfy both directions at once.",
   "missing_vital_policy": "non_reassuring_never_normal",
 
   "vitals_rules": [

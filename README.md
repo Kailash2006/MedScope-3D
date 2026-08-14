@@ -55,8 +55,8 @@ cd services/api && pip install -e ".[dev]" && pytest
 
 ## Phased status
 
-- [x] **Phase 0** — Scaffold & contracts (this commit)
-- [ ] Phase 1 — Safety engine (rules first)
+- [x] **Phase 0** — Scaffold & contracts
+- [x] **Phase 1** — Safety engine (red-flag rules first, no ML)
 - [ ] Phase 2 — ML pipeline
 - [ ] Phase 3 — Triage API + real-time
 - [ ] Phase 4 — Frontend core

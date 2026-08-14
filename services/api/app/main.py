@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from triage_shared import DISCLAIMER, URGENCY_LEVELS
 
 from .core.config import settings
+from .routers import triage as triage_router
 
 app = FastAPI(
     title="MedScope 3D API",
@@ -19,6 +20,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(triage_router.router)
 
 
 @app.get("/healthz", tags=["ops"])
