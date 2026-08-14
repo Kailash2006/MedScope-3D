@@ -23,6 +23,10 @@ ml/artifacts/*
 !ml/artifacts/.gitkeep
 ml/data/generated/
 
+# Test scratch DBs
+*_test_medscope.db
+test_medscope.db
+
 # Env / secrets
 .env
 .env.local

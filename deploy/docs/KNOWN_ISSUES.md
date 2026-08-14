@@ -16,6 +16,20 @@ Living list of accepted-for-now gaps. Reviewed each phase.
   (`apps/web/server.js` + `node_modules`) and launch `node apps/web/server.js`.
   A `web` healthcheck was also added so compose reports it healthy, not just running.
 
+## API / real-time (Phase 3)
+
+- **DB schema via `create_all`, not Alembic yet.** Tables are created from the
+  SQLAlchemy models at startup (`init_db`). Fine for the prototype, but there are
+  no versioned migrations. **Action:** add Alembic in Phase 7 (hardening) before
+  any schema evolves in a shared/persistent environment.
+- **Redis WS pub/sub proven single-instance only.** The manager publishes to a
+  per-session Redis channel and a subscriber rebroadcasts, so multiple API
+  instances *should* stay in sync — but this was only exercised with one API
+  instance (in-process + Redis round-trip verified live). Multi-instance fan-out
+  is unproven. Same class of gap as the earlier unproven paths.
+- **No auth/RBAC yet.** Anonymous sessions only; the recommended magic-link +
+  RBAC model (admin dashboard, GDPR endpoints) lands in Phases 5/6.
+
 ## ML pipeline (Phase 2)
 
 - **Multi-GPU Kaggle notebook unproven.** `ml/notebooks/medscope_kaggle_train.ipynb`

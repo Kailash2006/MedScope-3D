@@ -39,6 +39,11 @@ services:
       # Compose networking overrides (service names, not localhost).
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-medscope}:${POSTGRES_PASSWORD:-change_me_dev_only}@db:5432/${POSTGRES_DB:-medscope}
       REDIS_URL: redis://redis:6379/0
+      ML_ARTIFACT_DIR: /app/ml/artifacts
+    volumes:
+      # Mount trained model artifacts read-only. If empty, the API runs rules-only
+      # (PredictionService not-ready -> conservative fallback).
+      - ../ml/artifacts:/app/ml/artifacts:ro
     ports:
       - "8000:8000"
     depends_on:

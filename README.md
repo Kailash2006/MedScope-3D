@@ -58,7 +58,7 @@ cd services/api && pip install -e ".[dev]" && pytest
 - [x] **Phase 0** — Scaffold & contracts
 - [x] **Phase 1** — Safety engine (red-flag rules first, no ML)
 - [x] **Phase 2** — ML pipeline (synthetic data → XGBoost, emergency-recall gate)
-- [ ] Phase 3 — Triage API + real-time
+- [x] **Phase 3** — Triage API + real-time (PredictionService, sessions, WebSocket)
 - [ ] Phase 4 — Frontend core
 - [ ] Phase 5 — History / charts / PDF / admin
 - [ ] Phase 6 — Compliance & data rights

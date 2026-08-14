@@ -12,10 +12,22 @@ COPY packages/triage-shared/schema /app/packages/triage-shared/schema
 ENV TRIAGE_SHARED_SCHEMA_DIR=/app/packages/triage-shared/schema
 RUN pip install --no-cache-dir /app/packages/triage-shared/python
 
+# Install the ML package (provides medscope_ml for the PredictionService + its
+# feature contract). Pulls xgboost/scikit-learn/pandas.
+COPY ml/pyproject.toml /app/ml/pyproject.toml
+COPY ml/medscope_ml /app/ml/medscope_ml
+COPY ml/config.yaml /app/ml/config.yaml
+RUN pip install --no-cache-dir /app/ml
+
 # Install the API package + deps
 COPY services/api/pyproject.toml /app/services/api/pyproject.toml
 COPY services/api/app /app/services/api/app
 RUN pip install --no-cache-dir /app/services/api
+
+# Model artifacts are mounted at runtime (see docker-compose). Empty dir => the
+# PredictionService stays not-ready and the engine falls back conservatively.
+ENV ML_ARTIFACT_DIR=/app/ml/artifacts
+RUN mkdir -p /app/ml/artifacts
 
 WORKDIR /app/services/api
 EXPOSE 8000
