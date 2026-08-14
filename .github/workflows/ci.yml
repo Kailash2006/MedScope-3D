@@ -29,14 +29,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install shared + api
+      - name: Install shared + api + ml
         run: |
           pip install -e ./packages/triage-shared/python
           pip install -e "./services/api[dev]"
+          pip install -e "./ml[dev]"
           pip install pytest
       - name: Shared parity tests
         run: pytest packages/triage-shared/python/tests -q
       - name: API tests
         run: pytest services/api/tests -q
-      - name: Ruff lint (api)
-        run: ruff check services/api
+      - name: ML tests (dataset, eval gate, golden vector, generator parity)
+        run: pytest ml/tests -q
+      - name: Ruff lint (api + ml)
+        run: ruff check services/api ml

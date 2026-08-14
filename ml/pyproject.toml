@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "medscope-ml"
+version = "0.0.0"
+description = "MedScope 3D offline ML pipeline: synthetic dataset -> train (LR/XGBoost) -> evaluate (with emergency-recall safety gate) -> artifacts."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "scikit-learn>=1.4",
+    "xgboost>=2.0",
+    "joblib>=1.3",
+    "pyyaml>=6.0",
+    # triage-shared installed separately (editable) — single source of truth for
+    # UrgencyLevel + the red-flag table used to seed labels.
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5"]
+# Multi-GPU extras (installed on Kaggle/GPU hosts only; not needed for CPU runs).
+gpu = ["dask[complete]>=2024.1", "dask-cuda>=24.2"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Notebooks follow their own top-down/magic conventions; don't lint them.
+extend-exclude = ["notebooks", "*.ipynb"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["medscope_ml*"]

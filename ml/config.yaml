@@ -1,0 +1,32 @@
+# MedScope ML pipeline configuration.
+dataset:
+  n_rows: 60000            # local/CI default; the Kaggle notebook overrides to 300k+
+  seed: 42
+  # Safety bias: target share of red-flag (EMERGENCY/URGENT_TODAY) rows so the
+  # positive classes are well represented. The generator oversamples abnormal
+  # vitals / red-flag symptom combos to hit roughly this fraction.
+  redflag_target_fraction: 0.35
+  test_size: 0.15
+  val_size: 0.15
+
+train:
+  model: xgboost          # xgboost | logreg (both are trained; this picks the saved default)
+  calibrate: true         # isotonic calibration for trustworthy confidence
+  device: auto            # auto | cpu | cuda
+  emergency_weight: 5.0   # sample-weight multiplier for EMERGENCY rows (safety: minimize misses)
+  urgent_weight: 1.5      # sample-weight multiplier for URGENT_TODAY rows
+  xgboost:
+    n_estimators: 400
+    max_depth: 8
+    learning_rate: 0.1
+    subsample: 0.9
+    colsample_bytree: 0.9
+
+evaluation:
+  # Release gate: EMERGENCY recall must meet this or the eval gate test fails.
+  emergency_recall_min: 0.98
+  confidence_threshold: 0.6   # below this, serving routes to conservative fallback
+
+artifacts:
+  dir: artifacts
+  model_version: v1.0.0
