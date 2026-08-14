@@ -4,13 +4,17 @@ Living list of accepted-for-now gaps. Reviewed each phase.
 
 ## Verification gaps
 
-- **Docker Compose full bring-up unproven.** Phase 0 AC says
-  `docker compose up` starts web/api/db/redis healthy. Build *inputs* are
-  verified (Next standalone build succeeds, API package installs, Dockerfiles +
-  healthcheck-gated compose written), but the four-container healthy bring-up has
-  **not** been executed end-to-end (local Docker daemon was not running during
-  Phase 0). **Action:** run `docker compose -f deploy/docker-compose.yml up --build`
-  and confirm all four services report healthy before closing Phase 0 fully.
+- ~~**Docker Compose full bring-up unproven.**~~ **RESOLVED 2026-08-14.**
+  `docker compose -f deploy/docker-compose.yml up --build` brings up all four
+  services **healthy** (db, redis, api, web). Verified end-to-end:
+  `GET /healthz` → ok, `GET /api/v1/meta` → shared urgency levels + disclaimer,
+  `GET http://localhost:3000/` → HTTP 200 with correct title.
+  Fix required for the web image: Next.js standalone output in an npm-workspaces
+  monorepo excludes the hoisted root `node_modules` unless traced from the repo
+  root — set `outputFileTracingRoot` to the repo root and give the Docker build a
+  root lockfile, then copy the monorepo-nested standalone
+  (`apps/web/server.js` + `node_modules`) and launch `node apps/web/server.js`.
+  A `web` healthcheck was also added so compose reports it healthy, not just running.
 
 ## Dependency audit (npm) — snapshot 2026-08-14
 
