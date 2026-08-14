@@ -16,6 +16,21 @@ Living list of accepted-for-now gaps. Reviewed each phase.
   (`apps/web/server.js` + `node_modules`) and launch `node apps/web/server.js`.
   A `web` healthcheck was also added so compose reports it healthy, not just running.
 
+## ML pipeline (Phase 2)
+
+- **Multi-GPU Kaggle notebook unproven.** `ml/notebooks/medscope_kaggle_train.ipynb`
+  (Dask-CUDA + xgboost.dask across both GPUs) was authored but **not executed** —
+  no GPU in this environment. Same class of gap as the earlier Docker bring-up:
+  proven-by-construction, not proven-by-run. **Action:** run it end-to-end on
+  Kaggle (GPU T4 ×2) and confirm the emergency-recall gate passes before any
+  larger/GPU-trained artifact is relied upon. The shipped local artifact
+  (v1.0.0, 60k rows, CPU) is the only run actually verified.
+- **Macro-F1 ≈ 0.744 is modest.** Expected: synthetic rule-seeded data plus a
+  deliberate emphasis on EMERGENCY recall (up-weighting + asymmetric threshold)
+  trades non-emergency precision for recall. Watch this if/when real data or a
+  larger synthetic set is used; revisit class balance and the emergency threshold
+  τ. Not a correctness issue — EMERGENCY class itself is P0.96/R0.99.
+
 ## Dependency audit (npm) — snapshot 2026-08-14
 
 `npm audit`: **10 vulnerabilities (1 critical, 6 high, 3 moderate, 0 low)**.
