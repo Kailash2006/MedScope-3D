@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "triage-shared"
+version = "0.0.0"
+description = "Shared triage contracts (UrgencyLevel, reasons, red-flag table) for the Python services. Reads the same canonical JSON as the TS package."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["triage_shared*"]

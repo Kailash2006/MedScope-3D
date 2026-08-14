@@ -1,0 +1,21 @@
+{
+  "name": "@medscope/triage-shared",
+  "version": "0.0.0",
+  "description": "Single source of truth for triage contracts: UrgencyLevel, reasons, decision paths, and the age-banded red-flag rule table.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema/*": "./schema/*"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

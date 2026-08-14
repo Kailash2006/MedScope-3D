@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TriageReasonContracts",
+  "description": "Reason objects and decision-path enum returned on every assessment.",
+  "decision_path": {
+    "enum": [
+      "VITALS_RED_FLAG",
+      "SYMPTOM_RED_FLAG",
+      "ML",
+      "FALLBACK_LOW_CONF",
+      "FALLBACK_MISSING",
+      "FALLBACK_MODEL_ERROR"
+    ]
+  },
+  "reason_type": {
+    "enum": ["RED_FLAG", "ML", "FALLBACK", "INFO"]
+  },
+  "definitions": {
+    "Reason": {
+      "type": "object",
+      "required": ["type", "message"],
+      "properties": {
+        "type": { "$ref": "#/reason_type" },
+        "rule": { "type": ["string", "null"], "description": "Rule id from redflags.table.json, or null for ML/INFO reasons." },
+        "message": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

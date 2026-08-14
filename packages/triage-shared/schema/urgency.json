@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UrgencyLevel",
+  "description": "Canonical ordered list of urgency levels. Order is significance-ordered from most to least urgent, EXCEPT INSUFFICIENT_INFO which is a non-comparable sentinel. `rank` drives the escalate-only merge in the triage engine (higher rank = more urgent).",
+  "sentinel": "INSUFFICIENT_INFO",
+  "levels": [
+    { "value": "EMERGENCY", "rank": 5, "label": "Emergency", "advice": "Call emergency services now." },
+    { "value": "URGENT_TODAY", "rank": 4, "label": "Urgent today", "advice": "Seek care today." },
+    { "value": "DOCTOR_SOON", "rank": 3, "label": "Doctor soon", "advice": "See a doctor within a few days." },
+    { "value": "ROUTINE", "rank": 2, "label": "Routine", "advice": "Book a routine appointment." },
+    { "value": "SELF_CARE", "rank": 1, "label": "Self-care", "advice": "Self-care and monitor." },
+    { "value": "INSUFFICIENT_INFO", "rank": 0, "label": "Insufficient info", "advice": "Not enough information to assess. Add symptoms or vitals." }
+  ]
+}

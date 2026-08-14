@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MLFeatureContract",
+  "description": "Ordered feature contract shared by ml/training/features.py and the serving PredictionService (training/serving skew guard, Addendum B). Serving asserts artifact.feature_names_in_ == this order; mismatch => FALLBACK_MODEL_ERROR.",
+  "version": "v1",
+  "numeric_features": ["age", "severity_max", "duration_hours", "hr", "sbp", "dbp", "spo2", "temp_c", "rr"],
+  "missing_indicator_features": ["hr_missing", "sbp_missing", "dbp_missing", "spo2_missing", "temp_c_missing", "rr_missing"],
+  "categorical_features": ["sex", "age_band"],
+  "multihot_features": {
+    "regions": ["chest_left", "chest_right", "arm_left", "arm_right", "jaw", "head", "abdomen", "back", "leg_left", "leg_right"],
+    "symptom_codes": ["chest_pain", "difficulty_breathing", "abdominal_pain", "headache", "fever", "vomiting", "facial_droop", "unilateral_weakness", "speech_difficulty", "swelling", "neck_stiffness"],
+    "risk_factors": ["hypertension", "smoker", "diabetes", "pregnancy", "known_allergen_exposure"]
+  }
+}

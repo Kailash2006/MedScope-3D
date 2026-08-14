@@ -1,0 +1,25 @@
+# MedScope web (Next.js). Build context = repo root (needs workspace packages).
+FROM node:20-slim AS deps
+WORKDIR /repo
+COPY package.json package-lock.json* ./
+COPY packages/triage-shared/package.json packages/triage-shared/package.json
+COPY apps/web/package.json apps/web/package.json
+RUN npm install
+
+FROM node:20-slim AS build
+WORKDIR /repo
+COPY --from=deps /repo/node_modules ./node_modules
+COPY package.json ./
+COPY packages ./packages
+COPY apps ./apps
+RUN npm run build --workspace apps/web
+
+FROM node:20-slim AS run
+WORKDIR /repo/apps/web
+ENV NODE_ENV=production
+# Next.js standalone output bundles the server + required node_modules.
+COPY --from=build /repo/apps/web/.next/standalone /repo
+COPY --from=build /repo/apps/web/.next/static /repo/apps/web/.next/static
+COPY --from=build /repo/apps/web/public /repo/apps/web/public
+EXPOSE 3000
+CMD ["node", "/repo/apps/web/server.js"]

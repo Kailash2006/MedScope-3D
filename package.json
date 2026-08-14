@@ -1,0 +1,19 @@
+{
+  "name": "medscope-3d",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Real-time 3D ML symptom triage prototype (research/education only).",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev:web": "npm run dev --workspace apps/web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

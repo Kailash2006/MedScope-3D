@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RedFlagTable",
+  "version": "2026.08.1",
+  "provenance": "education-default",
+  "provenance_note": "Simplified triage-education defaults, NOT validated clinical cut-offs. Some values are deliberately conservative or coarse (e.g. infant HR-low < 90, older_adult SpO2 < 92) and do not match any specific clinical scoring system (PEWS, NEWS2, APLS). For research/education only.",
+  "age_bands": [
+    { "band": "infant",       "min_years": 0,  "max_years": 0 },
+    { "band": "child",        "min_years": 1,  "max_years": 11 },
+    { "band": "adolescent",   "min_years": 12, "max_years": 17 },
+    { "band": "adult",        "min_years": 18, "max_years": 64 },
+    { "band": "older_adult",  "min_years": 65, "max_years": 130 }
+  ],
+  "strictest_band": "infant",
+  "missing_age_policy": "use_strictest_band",
+  "missing_vital_policy": "non_reassuring_never_normal",
+
+  "vitals_rules": [
+    {
+      "id": "vitals.hr_high", "vital": "hr", "op": ">", "urgency": "EMERGENCY",
+      "message": "Severe tachycardia",
+      "thresholds": { "infant": 180, "child": 160, "adolescent": 140, "adult": 130, "older_adult": 120 }
+    },
+    {
+      "id": "vitals.hr_low", "vital": "hr", "op": "<", "urgency": "EMERGENCY",
+      "message": "Bradycardia",
+      "thresholds": { "infant": 90, "child": 70, "adolescent": 50, "adult": 40, "older_adult": 45 }
+    },
+    {
+      "id": "vitals.rr_high", "vital": "rr", "op": ">", "urgency": "EMERGENCY",
+      "message": "Tachypnea",
+      "thresholds": { "infant": 60, "child": 40, "adolescent": 30, "adult": 30, "older_adult": 28 }
+    },
+    {
+      "id": "vitals.rr_low", "vital": "rr", "op": "<", "urgency": "EMERGENCY",
+      "message": "Hypoventilation",
+      "thresholds": { "infant": 25, "child": 18, "adolescent": 10, "adult": 8, "older_adult": 8 }
+    },
+    {
+      "id": "vitals.spo2_low", "vital": "spo2", "op": "<", "urgency": "EMERGENCY",
+      "message": "Hypoxia",
+      "thresholds": { "infant": 92, "child": 92, "adolescent": 92, "adult": 90, "older_adult": 92 }
+    },
+    {
+      "id": "vitals.sbp_low", "vital": "sbp", "op": "<", "urgency": "EMERGENCY",
+      "message": "Hypotension / possible shock",
+      "thresholds": { "infant": 70, "child": 80, "adolescent": 90, "adult": 90, "older_adult": 100 }
+    },
+    {
+      "id": "vitals.temp_high", "vital": "temp_c", "op": ">=", "urgency": "EMERGENCY",
+      "message": "Hyperpyrexia",
+      "thresholds": { "infant": 38.0, "child": 40.0, "adolescent": 40.0, "adult": 40.0, "older_adult": 39.5 }
+    },
+    {
+      "id": "vitals.temp_low", "vital": "temp_c", "op": "<", "urgency": "EMERGENCY",
+      "message": "Hypothermia",
+      "thresholds": { "infant": 36.0, "child": 35.0, "adolescent": 35.0, "adult": 35.0, "older_adult": 35.5 }
+    },
+    {
+      "id": "vitals.htn_crisis_sbp", "vital": "sbp", "op": ">=", "urgency": "EMERGENCY",
+      "message": "Hypertensive crisis (systolic)",
+      "thresholds": { "infant": 160, "child": 170, "adolescent": 180, "adult": 180, "older_adult": 180 }
+    },
+    {
+      "id": "vitals.htn_crisis_dbp", "vital": "dbp", "op": ">=", "urgency": "EMERGENCY",
+      "message": "Hypertensive crisis (diastolic)",
+      "thresholds": { "infant": 110, "child": 110, "adolescent": 120, "adult": 120, "older_adult": 120 }
+    }
+  ],
+
+  "symptom_rules": [
+    {
+      "id": "symptom.infant_fever", "urgency": "EMERGENCY",
+      "message": "Fever in a young infant",
+      "when": { "age_band": ["infant"], "vital_ge": { "temp_c": 38.0 } },
+      "note": "Any temp >= 38.0C in an infant is treated as an independent emergency red flag."
+    },
+    {
+      "id": "symptom.cardiac", "urgency": "EMERGENCY",
+      "message": "Possible cardiac event",
+      "when": {
+        "symptom": "chest_pain",
+        "severity_ge": { "adult": 7, "older_adult": 5, "default": 7 },
+        "any_of": { "regions": ["arm_left", "jaw"], "risk_factors": ["hypertension", "smoker", "diabetes"] }
+      }
+    },
+    {
+      "id": "symptom.stroke_fast", "urgency": "EMERGENCY",
+      "message": "Possible stroke (FAST)",
+      "when": { "any_symptom": ["facial_droop", "unilateral_weakness", "speech_difficulty"], "severity_ge": { "default": 1 } }
+    },
+    {
+      "id": "symptom.airway", "urgency": "EMERGENCY",
+      "message": "Airway / breathing compromise",
+      "when": { "any_symptom": ["difficulty_breathing", "stridor"], "severity_ge": { "default": 6 } }
+    },
+    {
+      "id": "symptom.anaphylaxis", "urgency": "EMERGENCY",
+      "message": "Possible anaphylaxis",
+      "when": { "all_symptoms": ["swelling", "difficulty_breathing"], "any_of": { "risk_factors": ["known_allergen_exposure"] } }
+    },
+    {
+      "id": "symptom.neuro_headache", "urgency": "EMERGENCY",
+      "message": "Red-flag headache",
+      "when": { "any_symptom": ["thunderclap_headache", "worst_ever_headache"], "severity_ge": { "default": 1 } }
+    },
+    {
+      "id": "symptom.meningitis", "urgency": "EMERGENCY",
+      "message": "Possible meningitis",
+      "when": { "all_symptoms": ["headache", "neck_stiffness"], "vital_ge": { "temp_c": 38.0 } }
+    },
+    {
+      "id": "symptom.hemorrhage", "urgency": "EMERGENCY",
+      "message": "Significant bleeding",
+      "when": { "any_symptom": ["uncontrolled_bleeding", "hematemesis", "hemoptysis"], "severity_ge": { "default": 1 } }
+    },
+    {
+      "id": "symptom.sepsis_screen", "urgency": "EMERGENCY",
+      "message": "Sepsis screen positive",
+      "when": { "vital_ge": { "temp_c": 38.0 }, "any_vital": { "hr_gt": 120, "rr_gt": 24, "spo2_lt": 92 } }
+    },
+    {
+      "id": "symptom.pregnancy_abdo", "urgency": "URGENT_TODAY",
+      "message": "Severe abdominal pain in pregnancy",
+      "when": { "symptom": "abdominal_pain", "severity_ge": { "default": 7 }, "any_of": { "risk_factors": ["pregnancy"] } }
+    },
+    {
+      "id": "symptom.pediatric_dehydration", "urgency": "URGENT_TODAY",
+      "message": "Possible pediatric dehydration",
+      "when": { "age_band": ["infant", "child"], "all_symptoms": ["vomiting", "reduced_intake"] }
+    }
+  ],
+
+  "modifiers": {
+    "escalate_one_level_bands": ["infant", "child", "older_adult"],
+    "escalate_one_level_when": "borderline symptom (severity 5-6) OR fever without a vitals red flag",
+    "escalate_only": true,
+    "never_downgrade": true
+  }
+}
