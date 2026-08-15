@@ -87,12 +87,12 @@ export default function TriagePage() {
         <BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} />
 
         <div style={{ display: "grid", gap: "1rem" }}>
-          <div className="rise rise-2"><Demographics state={state} dispatch={dispatch} /></div>
-          <div className="rise rise-3"><SymptomForm state={state} dispatch={dispatch} /></div>
-          <div className="rise rise-4"><VitalsForm state={state} dispatch={dispatch} /></div>
-          <div className="rise rise-4"><RiskFactors state={state} dispatch={dispatch} /></div>
-          <div className="rise rise-5"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
-          <div className="rise rise-5">
+          <div className="rise rise-2 reveal-3d"><Demographics state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-3 reveal-3d"><SymptomForm state={state} dispatch={dispatch} /></div>
+          <div className="reveal-3d"><VitalsForm state={state} dispatch={dispatch} /></div>
+          <div className="reveal-3d"><RiskFactors state={state} dispatch={dispatch} /></div>
+          <div className="reveal-3d"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
+          <div className="reveal-3d">
             <DataRightsPanel
               sessionId={sessionId}
               onDeleted={() => { dispatch({ type: "reset" }); setSessionId(null); setSessionNonce((n) => n + 1); }}

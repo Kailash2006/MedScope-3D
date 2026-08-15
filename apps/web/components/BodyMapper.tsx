@@ -39,9 +39,10 @@ export function BodyMapper({ selected, onToggle, urgency }: Props) {
           <p className="card-title" style={{ margin: 0 }}>Body map</p>
           <h2 id="mapper-heading" style={{ fontSize: "1.15rem", margin: ".1rem 0 0" }}>Where does it hurt?</h2>
         </div>
-        <button type="button" className="chip" onClick={() => setUse3D((v) => !v)}>
-          {use3D ? "2D" : "3D"}
-        </button>
+        <div className="seg" role="group" aria-label="Body map view mode">
+          <button type="button" className="seg-btn" aria-pressed={use3D} onClick={() => setUse3D(true)}>3D</button>
+          <button type="button" className="seg-btn" aria-pressed={!use3D} onClick={() => setUse3D(false)}>2D</button>
+        </div>
       </div>
 
       <div

@@ -172,6 +172,23 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
   box-shadow: 0 8px 22px -12px rgba(34, 211, 238, 0.8);
 }
 
+/* segmented toggle (e.g. 3D / 2D) */
+.seg {
+  display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px;
+  border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03);
+}
+.seg-btn {
+  font: inherit; cursor: pointer; font-size: 0.78rem; padding: 0.28rem 0.72rem;
+  border-radius: 999px; border: none; background: transparent; color: var(--muted);
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.seg-btn:hover { color: var(--text); }
+.seg-btn[aria-pressed="true"] {
+  color: #04121b; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 6px 16px -9px rgba(34, 211, 238, 0.85);
+}
+
 /* ---------- layout ---------- */
 .shell { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
 .triage-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr) 340px; gap: 1.25rem; align-items: start; }
@@ -190,6 +207,23 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 @keyframes pop { 0% { transform: scale(0.92); opacity: 0; } 60% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
 @keyframes haloPulse { 0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 0.9; } 50% { box-shadow: 0 0 0 8px transparent; opacity: 0.5; } }
 .rise { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* scroll-driven 3D reveal — cards tilt up into place as they enter the viewport */
+@keyframes reveal3d {
+  from { opacity: 0; transform: perspective(1200px) rotateX(11deg) translateY(42px) scale(0.97); }
+  to   { opacity: 1; transform: perspective(1200px) rotateX(0deg) translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal-3d {
+      animation: reveal3d linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 32%;
+      transform-origin: center top;
+      will-change: transform, opacity;
+    }
+  }
+}
 .pop { animation: pop 0.45s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
 .rise-1 { animation-delay: 0.05s; } .rise-2 { animation-delay: 0.12s; }
 .rise-3 { animation-delay: 0.19s; } .rise-4 { animation-delay: 0.26s; } .rise-5 { animation-delay: 0.33s; }

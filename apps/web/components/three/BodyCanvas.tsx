@@ -60,7 +60,7 @@ export default function BodyCanvas({ selected, onToggle, urgency }: Props) {
   return (
     <div aria-hidden="true" style={{ width: "100%", height: "100%", borderRadius: 20, overflow: "hidden" }}>
       <Canvas
-        camera={{ position: [0, 0.6, 9], fov: 42 }}
+        camera={{ position: [0, 0.25, 11], fov: 38 }}
         dpr={[1, 1.7]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
@@ -77,14 +77,15 @@ export default function BodyCanvas({ selected, onToggle, urgency }: Props) {
         <AuraRings color={accent} />
         <Sparkles count={60} scale={[9, 11, 6]} size={2.6} speed={0.35} opacity={0.5} color={accent} />
 
-        <Float speed={1.4} rotationIntensity={0.25} floatIntensity={0.5}>
+        <Float speed={1.3} rotationIntensity={0.2} floatIntensity={0.35}>
           <BodyModel selected={selected} onToggle={onToggle} urgency={urgency} />
         </Float>
 
-        <ContactShadows position={[0, -3.4, 0]} opacity={0.55} scale={12} blur={2.6} far={5} color="#000000" />
+        <ContactShadows position={[0, -3.35, 0]} opacity={0.55} scale={12} blur={2.6} far={5} color="#000000" />
 
         <OrbitControls makeDefault enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.7}
-          minPolarAngle={Math.PI / 2.6} maxPolarAngle={Math.PI / 1.9} />
+          target={[0, -0.15, 0]}
+          minPolarAngle={Math.PI / 2.4} maxPolarAngle={Math.PI / 1.95} />
         <AdaptiveDpr pixelated />
       </Canvas>
     </div>
