@@ -51,7 +51,7 @@ export default function Home() {
                 width: 12,
                 height: 12,
                 borderRadius: "50%",
-                background: COLORS[level] ?? "#64748b",
+                background: COLORS[level] ?? "#94a3b8",
                 flexShrink: 0,
               }}
             />

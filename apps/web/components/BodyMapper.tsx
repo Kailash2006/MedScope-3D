@@ -4,13 +4,14 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import type { RegionCode } from "../lib/regions";
 import { lowPowerBodyMapPreferred } from "../lib/webgl";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { RegionSelector } from "./RegionSelector";
 import { SvgBodyMap } from "./SvgBodyMap";
 
 const BodyCanvas = dynamic(() => import("./three/BodyCanvas"), {
   ssr: false,
   loading: () => (
-    <div style={{ height: 360, display: "grid", placeItems: "center", color: "#64748b" }}>
+    <div style={{ height: 360, display: "grid", placeItems: "center", color: "#94a3b8" }}>
       Loading 3D view…
     </div>
   ),
@@ -49,12 +50,14 @@ export function BodyMapper({ selected, onToggle, urgency }: Props) {
       </div>
 
       {use3D ? (
-        <BodyCanvas selected={selected} onToggle={onToggle} urgency={urgency} />
+        <ErrorBoundary fallback={<div style={{ display: "grid", placeItems: "center" }}><SvgBodyMap selected={selected} onToggle={onToggle} urgency={urgency} /></div>}>
+          <BodyCanvas selected={selected} onToggle={onToggle} urgency={urgency} />
+        </ErrorBoundary>
       ) : (
         <div style={{ display: "grid", placeItems: "center" }}>
           <SvgBodyMap selected={selected} onToggle={onToggle} urgency={urgency} />
           {autoLowPower && (
-            <p style={{ color: "#64748b", fontSize: ".78rem", marginTop: ".4rem" }}>
+            <p style={{ color: "#94a3b8", fontSize: ".78rem", marginTop: ".4rem" }}>
               2D view (WebGL unavailable or reduced-motion preferred).
             </p>
           )}

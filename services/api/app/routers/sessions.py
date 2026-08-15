@@ -11,6 +11,7 @@ from ..compliance import delete_session, export_bundle
 from ..core.db import get_db
 from ..deps import get_predictor
 from ..models.db import Assessment, Session
+from ..ratelimit import rate_limit
 from ..report.pdf import build_report
 from ..schemas.session import SessionCreate, SessionOut, SessionUpdate
 from ..session_service import apply_patch, latest_assessment, recompute_and_store
@@ -20,7 +21,7 @@ from ..triage.models import TriageResult, Vitals
 class RetentionUpdate(BaseModel):
     retention_days: int = Field(ge=1, le=3650)
 
-router = APIRouter(prefix="/api/v1/sessions", tags=["sessions"])
+router = APIRouter(prefix="/api/v1/sessions", tags=["sessions"], dependencies=[Depends(rate_limit)])
 
 
 def _client_ip(request: Request) -> str | None:

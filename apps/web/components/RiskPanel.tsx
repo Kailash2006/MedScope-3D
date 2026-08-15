@@ -18,7 +18,7 @@ const STATUS_TEXT: Record<SocketStatus, string> = {
 };
 
 export function RiskPanel({ assessment, status, saved }: Props) {
-  const color = assessment ? urgencyColor(assessment.urgency) : "#64748b";
+  const color = assessment ? urgencyColor(assessment.urgency) : "#94a3b8";
 
   return (
     <aside className="risk-aside" aria-label="Urgency assessment" style={{ position: "sticky", top: "1rem" }}>
@@ -55,7 +55,7 @@ export function RiskPanel({ assessment, status, saved }: Props) {
         </div>
       </div>
 
-      <p style={{ fontSize: ".72rem", color: "#64748b", marginTop: ".6rem", lineHeight: 1.5 }}>
+      <p style={{ fontSize: ".72rem", color: "#94a3b8", marginTop: ".6rem", lineHeight: 1.5 }}>
         {assessment?.disclaimer ||
           "Research/education prototype. Not a diagnosis. Not medical advice."}
       </p>

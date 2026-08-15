@@ -21,6 +21,23 @@ jobs:
       - name: Test (parity + web contract)
         run: npm run test
 
+  e2e:
+    name: Web a11y + keyboard E2E (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Build web
+        run: npm run build --workspace apps/web
+      - name: Run e2e (axe + keyboard); Playwright starts the server
+        working-directory: apps/web
+        run: npm run e2e
+
   python:
     name: Python lint + tests
     runs-on: ubuntu-latest
@@ -37,9 +54,11 @@ jobs:
           pip install pytest
       - name: Shared parity tests
         run: pytest packages/triage-shared/python/tests -q
-      - name: API tests
-        run: pytest services/api/tests -q
+      - name: API tests (+ triage-engine coverage gate >= 90%)
+        run: pytest services/api/tests -q --cov=app.triage --cov-report=term-missing --cov-fail-under=90
       - name: ML tests (dataset, eval gate, golden vector, generator parity)
         run: pytest ml/tests -q
       - name: Ruff lint (api + ml)
         run: ruff check services/api ml
+      - name: Alembic migration applies cleanly
+        run: cd services/api && DATABASE_URL=sqlite:///./_ci.db alembic upgrade head && alembic downgrade base

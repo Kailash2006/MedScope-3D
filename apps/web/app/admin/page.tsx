@@ -111,7 +111,7 @@ export default function AdminPage() {
             <Bars data={data.decision_path_distribution} />
           </section>
 
-          <p style={{ color: "#64748b", fontSize: ".8rem" }}>
+          <p style={{ color: "#94a3b8", fontSize: ".8rem" }}>
             Engine {data.engine_version}. Urgency legend: {Object.keys(data.urgency_distribution).map(urgencyLabel).join(", ")}.
           </p>
         </div>

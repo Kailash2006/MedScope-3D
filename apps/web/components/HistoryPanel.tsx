@@ -45,7 +45,7 @@ export function HistoryPanel({ sessionId, refreshKey }: Props) {
       </div>
 
       {points.length === 0 ? (
-        <p style={{ color: "#64748b", fontSize: ".85rem", margin: 0 }}>
+        <p style={{ color: "#94a3b8", fontSize: ".85rem", margin: 0 }}>
           No history yet — changes autosave and appear here.
         </p>
       ) : (
@@ -69,7 +69,7 @@ export function HistoryPanel({ sessionId, refreshKey }: Props) {
                 <span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: urgencyColor(p.urgency), flexShrink: 0 }} />
                 <span style={{ color: "#cbd5e1", minWidth: 96 }}>{new Date(p.at).toLocaleTimeString()}</span>
                 <span style={{ color: urgencyColor(p.urgency), fontWeight: 600 }}>{urgencyLabel(p.urgency)}</span>
-                <span style={{ color: "#64748b" }}>· {p.decision_path}</span>
+                <span style={{ color: "#94a3b8" }}>· {p.decision_path}</span>
               </li>
             ))}
           </ol>

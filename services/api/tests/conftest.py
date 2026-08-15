@@ -10,6 +10,7 @@ os.environ.setdefault("DATABASE_URL", f"sqlite:///{_DB_PATH.as_posix()}")
 os.environ.setdefault("REDIS_URL", "redis://127.0.0.1:6399/0")  # refused fast -> in-process broadcast
 os.environ.setdefault("ML_ARTIFACT_DIR", str(Path(__file__).parent / "_no_artifacts"))
 os.environ.setdefault("ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("RATE_LIMIT_PER_MINUTE", "0")  # disabled by default; enabled in its own test
 
 import pytest
 import yaml

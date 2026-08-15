@@ -10,7 +10,7 @@ export const URGENCY_COLOR: Record<string, string> = {
 };
 
 export function urgencyColor(level: string): string {
-  return URGENCY_COLOR[level] ?? "#64748b";
+  return URGENCY_COLOR[level] ?? "#94a3b8";
 }
 
 export function urgencyLabel(level: string): string {

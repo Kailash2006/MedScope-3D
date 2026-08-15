@@ -24,7 +24,7 @@ export function VitalsChart({ title, unit, series, color = "#38bdf8" }: Props) {
   let latest = "—";
 
   if (pts.length === 0) {
-    body = <text x={W / 2} y={H / 2} textAnchor="middle" fill="#64748b" fontSize="10">no data</text>;
+    body = <text x={W / 2} y={H / 2} textAnchor="middle" fill="#94a3b8" fontSize="10">no data</text>;
   } else {
     const vals = pts.map((p) => p.v);
     const min = Math.min(...vals);
@@ -39,8 +39,8 @@ export function VitalsChart({ title, unit, series, color = "#38bdf8" }: Props) {
       <>
         {pts.length > 1 && <polyline points={d} fill="none" stroke={color} strokeWidth={1.5} />}
         {pts.map((p) => <circle key={p.i} cx={x(p.i)} cy={y(p.v)} r={2} fill={color} />)}
-        <text x={pad} y={10} fill="#64748b" fontSize="8">{max}</text>
-        <text x={pad} y={H - 1} fill="#64748b" fontSize="8">{min}</text>
+        <text x={pad} y={10} fill="#94a3b8" fontSize="8">{max}</text>
+        <text x={pad} y={H - 1} fill="#94a3b8" fontSize="8">{min}</text>
       </>
     );
   }

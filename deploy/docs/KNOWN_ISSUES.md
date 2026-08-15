@@ -16,26 +16,27 @@ Living list of accepted-for-now gaps. Reviewed each phase.
   (`apps/web/server.js` + `node_modules`) and launch `node apps/web/server.js`.
   A `web` healthcheck was also added so compose reports it healthy, not just running.
 
-## Frontend (Phase 4)
+## Frontend a11y (RESOLVED in Phase 7)
 
-- **A11y: axe-core measured (clean); Lighthouse number still not run.** Ran
-  axe-core (WCAG 2.0/2.1 A + AA) against the live `/triage` page: **12 passes,
-  0 incomplete, 1 violation**. The single violation (`meta-viewport`, zoom
-  disabled) did **not** originate from our source (grep clean) — it was injected
-  by the automation/extension environment. A defensive accessible `viewport`
-  export was added to `app/layout.tsx` regardless. So axe is effectively clean on
-  our markup. A full **Lighthouse** score (which also weighs performance/SEO
-  heuristics) was still not run — defer to the Phase 7 Playwright+axe CI job.
-- **Full keyboard-only run not scripted.** Structure supports it and was spot-
-  checked, but there is no automated keyboard-only E2E yet (deferred with the
-  Playwright option).
+- ~~axe not measured in CI~~ **RESOLVED.** A Playwright + `@axe-core/playwright`
+  E2E (`apps/web/e2e/a11y.spec.ts`, CI job `e2e`) runs WCAG 2.1 A/AA against a
+  clean chromium and asserts **no serious/critical violations** — currently green.
+  It caught a real bug: muted text `#64748b` on the dark bg was 3.95:1 (< 4.5:1);
+  fixed by bumping to `#94a3b8` across the UI.
+- ~~keyboard-only run not scripted~~ **RESOLVED.** The same spec drives
+  keyboard-only region selection (focus → Enter/Space toggles `aria-pressed`) and
+  a tab-flow check — green.
+- **Lingering:** a full **Lighthouse** score (which also weighs perf/SEO/best-
+  practices, beyond a11y) is still not run. axe covers the a11y ruleset and
+  passes; a Lighthouse number is a nice-to-have, not a correctness gap.
 
 ## API / real-time (Phase 3)
 
-- **DB schema via `create_all`, not Alembic yet.** Tables are created from the
-  SQLAlchemy models at startup (`init_db`). Fine for the prototype, but there are
-  no versioned migrations. **Action:** add Alembic in Phase 7 (hardening) before
-  any schema evolves in a shared/persistent environment.
+- ~~**DB schema via `create_all`, not Alembic yet.**~~ **RESOLVED in Phase 7.**
+  Alembic is set up (`services/api/alembic/`, initial revision `0001_initial`
+  matching the models); validated by upgrade→downgrade in CI and confirmed inside
+  the api container. `init_db`'s `create_all` remains the dev/test convenience;
+  production uses `alembic upgrade head` (see DEPLOYMENT.md).
 - **Redis WS pub/sub proven single-instance only.** The manager publishes to a
   per-session Redis channel and a subscriber rebroadcasts, so multiple API
   instances *should* stay in sync — but this was only exercised with one API
@@ -59,22 +60,27 @@ Living list of accepted-for-now gaps. Reviewed each phase.
   larger synthetic set is used; revisit class balance and the emergency threshold
   τ. Not a correctness issue — EMERGENCY class itself is P0.96/R0.99.
 
-## Dependency audit (npm) — snapshot 2026-08-14
+## Dependency audit (npm) — revisited 2026-08-15 (Phase 7)
 
 `npm audit`: **10 vulnerabilities (1 critical, 6 high, 3 moderate, 0 low)**.
-All are in the **dev / build toolchain**, not the API runtime:
+`npm audit fix` (non-breaking) resolves **none** — every fix is a semver-major.
+Precise triage:
 
-| Package | Chain | Notes |
-|---|---|---|
-| next | direct (web) | advisory-driven; fix requires major bump |
-| esbuild, vite, vite-node, vitest, @vitest/mocker | dev/test | test runner chain |
-| postcss | build | source-map advisory |
-| eslint-config-next, @next/eslint-plugin-next | lint | dev only |
-| glob | transitive | dev only |
+| Severity | Package | Ships at runtime? | Fix |
+|---|---|---|---|
+| **critical** | `vitest` (+ @vitest/mocker) | **No** — dev test runner only | vitest 3 (major) |
+| high | `next` | **Yes** — Next standalone server | Next 16 (major, 14→16) |
+| high/mod | esbuild, vite, vite-node, postcss | No — dev/build chain | via vitest/vite majors |
+| mod | eslint-config-next, @next/eslint-plugin-next, glob | No — lint/dev | major |
 
-**Decision:** not applying `npm audit fix --force` — it forces a breaking
-Next.js major upgrade. Revisit when we intentionally bump Next (likely Phase 4
-when the real frontend lands). None of these ship in the API/runtime image.
+**The critical is dev-only** (vitest); it never ships. The only runtime-affecting
+item is **`next` (high)**, fixable only by a Next **14→16 major upgrade** — a
+dedicated migration with its own testing, out of scope for a hardening pass.
+Practical exposure on this prototype is low (no custom middleware; not public).
+
+**Decision:** defer both as tracked work. Do NOT `npm audit fix --force`
+(breaks the build). Schedule a deliberate Next 14→16 + vitest 2→3 upgrade as its
+own task.
 
 ## API surface
 

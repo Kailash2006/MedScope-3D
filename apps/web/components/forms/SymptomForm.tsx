@@ -25,13 +25,13 @@ export function SymptomForm({ state, dispatch }: { state: TriageState; dispatch:
           type="button"
           disabled={!pick}
           onClick={() => { dispatch({ type: "addSymptom", code: pick }); setPick(""); }}
-          style={{ ...inputStyle, cursor: pick ? "pointer" : "not-allowed", background: pick ? "#0ea5e9" : "#1e293b", color: pick ? "#001018" : "#64748b", border: "none" }}
+          style={{ ...inputStyle, cursor: pick ? "pointer" : "not-allowed", background: pick ? "#0ea5e9" : "#1e293b", color: pick ? "#001018" : "#94a3b8", border: "none" }}
         >
           Add
         </button>
       </div>
 
-      {state.symptoms.length === 0 && <p style={{ color: "#64748b", fontSize: ".85rem", margin: 0 }}>No symptoms added yet.</p>}
+      {state.symptoms.length === 0 && <p style={{ color: "#94a3b8", fontSize: ".85rem", margin: 0 }}>No symptoms added yet.</p>}
 
       <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: ".75rem" }}>
         {state.symptoms.map((s, i) => (

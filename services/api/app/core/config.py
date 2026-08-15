@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     # Retention purge job cadence (seconds). 0 disables the background scheduler.
     purge_interval_seconds: int = 3600
 
+    # Rate limit (requests per minute per client IP + route). 0 disables limiting.
+    rate_limit_per_minute: int = 120
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

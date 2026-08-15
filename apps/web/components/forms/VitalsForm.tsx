@@ -16,7 +16,7 @@ export function VitalsForm({ state, dispatch }: { state: TriageState; dispatch: 
           return (
             <div key={v.key}>
               <label htmlFor={`vital-${v.key}`} style={{ display: "block", fontSize: ".78rem", color: "#94a3b8", marginBottom: ".2rem" }}>
-                {v.label} <span style={{ color: "#64748b" }}>({v.unit})</span>
+                {v.label} <span style={{ color: "#94a3b8" }}>({v.unit})</span>
               </label>
               <input
                 id={`vital-${v.key}`} type="number" min={v.min} max={v.max} inputMode="decimal"
