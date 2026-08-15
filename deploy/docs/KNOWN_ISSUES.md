@@ -18,14 +18,14 @@ Living list of accepted-for-now gaps. Reviewed each phase.
 
 ## Frontend (Phase 4)
 
-- **Lighthouse a11y ≥ 95 not formally measured.** The UI was built to WCAG AA
-  intent — semantic fieldsets/labels, `aria-pressed` region toggles, `aria-live`
-  risk panel, visible focus rings, a skip link, keyboard-parity region selector,
-  and no overlapping text (verified visually in the live app). Component tests
-  assert the accessible roles/labels. But a real Lighthouse/axe score was **not**
-  run in this environment. **Action:** run Lighthouse + axe (e.g. via the
-  Playwright path deferred earlier) and record the score before claiming the AC
-  numerically. Same honesty boundary as prior "proven-by-construction" gaps.
+- **A11y: axe-core measured (clean); Lighthouse number still not run.** Ran
+  axe-core (WCAG 2.0/2.1 A + AA) against the live `/triage` page: **12 passes,
+  0 incomplete, 1 violation**. The single violation (`meta-viewport`, zoom
+  disabled) did **not** originate from our source (grep clean) — it was injected
+  by the automation/extension environment. A defensive accessible `viewport`
+  export was added to `app/layout.tsx` regardless. So axe is effectively clean on
+  our markup. A full **Lighthouse** score (which also weighs performance/SEO
+  heuristics) was still not run — defer to the Phase 7 Playwright+axe CI job.
 - **Full keyboard-only run not scripted.** Structure supports it and was spot-
   checked, but there is no automated keyboard-only E2E yet (deferred with the
   Playwright option).

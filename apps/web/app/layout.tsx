@@ -7,6 +7,15 @@ export const metadata = {
     "Research/education prototype for 3D symptom triage. Not a diagnosis. Not medical advice.",
 };
 
+// Accessibility: never disable zoom (WCAG 1.4.4). Explicit so the app always
+// ships a zoomable viewport regardless of environment defaults.
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
