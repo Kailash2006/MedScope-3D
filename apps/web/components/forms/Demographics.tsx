@@ -2,6 +2,7 @@
 
 import type { Action } from "../../lib/triageState";
 import type { Sex, TriageState } from "../../lib/types";
+import { Select } from "../Select";
 
 export function Demographics({ state, dispatch }: { state: TriageState; dispatch: (a: Action) => void }) {
   return (
@@ -18,15 +19,19 @@ export function Demographics({ state, dispatch }: { state: TriageState; dispatch
         </div>
         <div>
           <label htmlFor="sex" className="field-label">Sex</label>
-          <select
-            id="sex" className="input" value={state.sex ?? ""}
-            onChange={(e) => dispatch({ type: "setSex", sex: (e.target.value || null) as Sex | null })}
-          >
-            <option value="">Prefer not to say</option>
-            <option value="M">Male</option>
-            <option value="F">Female</option>
-            <option value="O">Other</option>
-          </select>
+          <Select
+            id="sex"
+            ariaLabel="Sex"
+            value={state.sex ?? ""}
+            placeholder="Prefer not to say"
+            options={[
+              { value: "", label: "Prefer not to say" },
+              { value: "M", label: "Male" },
+              { value: "F", label: "Female" },
+              { value: "O", label: "Other" },
+            ]}
+            onChange={(v) => dispatch({ type: "setSex", sex: (v || null) as Sex | null })}
+          />
         </div>
       </div>
     </fieldset>

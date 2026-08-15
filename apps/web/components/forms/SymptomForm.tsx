@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Action } from "../../lib/triageState";
 import type { TriageState } from "../../lib/types";
 import { SYMPTOM_CODES, humanize } from "../../lib/vocab";
+import { Select } from "../Select";
 
 export function SymptomForm({ state, dispatch }: { state: TriageState; dispatch: (a: Action) => void }) {
   const [pick, setPick] = useState("");
@@ -14,11 +15,15 @@ export function SymptomForm({ state, dispatch }: { state: TriageState; dispatch:
       <legend className="sr-only">Symptoms</legend>
 
       <div style={{ display: "flex", gap: ".5rem", marginBottom: ".75rem" }}>
-        <label htmlFor="add-symptom" style={{ position: "absolute", left: -9999 }}>Add a symptom</label>
-        <select id="add-symptom" className="input" value={pick} onChange={(e) => setPick(e.target.value)} style={{ flex: 1 }}>
-          <option value="">Add a symptom…</option>
-          {available.map((c) => <option key={c} value={c}>{humanize(c)}</option>)}
-        </select>
+        <Select
+          id="add-symptom"
+          ariaLabel="Add a symptom"
+          value={pick}
+          placeholder="Add a symptom…"
+          options={available.map((c) => ({ value: c, label: humanize(c) }))}
+          onChange={setPick}
+          style={{ flex: 1 }}
+        />
         <button type="button" className="btn btn-primary" disabled={!pick}
           onClick={() => { dispatch({ type: "addSymptom", code: pick }); setPick(""); }}
           style={{ opacity: pick ? 1 : 0.5 }}>
