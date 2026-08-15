@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session as OrmSession
 
 from ..audit import logger as audit
 from ..core.db import get_db
 from ..deps import get_predictor
 from ..models.db import Assessment, Session
+from ..report.pdf import build_report
 from ..schemas.session import SessionCreate, SessionOut, SessionUpdate
 from ..session_service import apply_patch, latest_assessment, recompute_and_store
 from ..triage.models import TriageResult, Vitals
@@ -86,3 +87,43 @@ def session_history(session_id: str, db: OrmSession = Depends(get_db)) -> list[T
         )
         for a in rows
     ]
+
+
+@router.get("/{session_id}/timeline")
+def session_timeline(session_id: str, db: OrmSession = Depends(get_db)) -> list[dict]:
+    """Per-assessment snapshots for vitals charts and the symptom timeline."""
+    _get_or_404(db, session_id)
+    rows = (
+        db.query(Assessment).filter(Assessment.session_id == session_id)
+        .order_by(Assessment.created_at.asc()).all()
+    )
+    points = []
+    for a in rows:
+        snap = a.input_snapshot or {}
+        points.append({
+            "at": a.created_at.isoformat(),
+            "urgency": a.urgency,
+            "decision_path": a.decision_path,
+            "confidence": a.confidence,
+            "vitals": snap.get("vitals", {}),
+            "symptoms": snap.get("symptoms", []),
+        })
+    return points
+
+
+@router.get("/{session_id}/report.pdf")
+def session_report(session_id: str, request: Request, db: OrmSession = Depends(get_db)) -> Response:
+    """Clinician-ready PDF (disclaimer + model/engine version always included)."""
+    row = _get_or_404(db, session_id)
+    assessments = (
+        db.query(Assessment).filter(Assessment.session_id == session_id)
+        .order_by(Assessment.created_at.asc()).all()
+    )
+    pdf_bytes = build_report(row, assessments)
+    audit.record(db, "session.report_export", "session", session_id, ip=_client_ip(request))
+    db.commit()
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="medscope-report-{session_id[:8]}.pdf"'},
+    )

@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     default_retention_days: int = 30
     audit_retention_days: int = 365
 
+    # Admin dashboard RBAC (Phase 5 stand-in until full user roles in Phase 6).
+    # Empty => admin endpoints are disabled (return 403 for everyone).
+    admin_token: str = ""
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

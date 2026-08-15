@@ -60,6 +60,6 @@ cd services/api && pip install -e ".[dev]" && pytest
 - [x] **Phase 2** — ML pipeline (synthetic data → XGBoost, emergency-recall gate)
 - [x] **Phase 3** — Triage API + real-time (PredictionService, sessions, WebSocket)
 - [x] **Phase 4** — Frontend core (3D body mapper, live risk panel, 2D fallback, a11y)
-- [ ] Phase 5 — History / charts / PDF / admin
+- [x] **Phase 5** — History, charts, clinician PDF, admin safety dashboard (RBAC)
 - [ ] Phase 6 — Compliance & data rights
 - [ ] Phase 7 — Hardening & deployment

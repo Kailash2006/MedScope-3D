@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useRef, useState } from "react";
 import { BodyMapper } from "../../components/BodyMapper";
+import { HistoryPanel } from "../../components/HistoryPanel";
 import { Demographics } from "../../components/forms/Demographics";
 import { RiskFactors } from "../../components/forms/RiskFactors";
 import { SymptomForm } from "../../components/forms/SymptomForm";
@@ -18,6 +19,8 @@ export default function TriagePage() {
   const [status, setStatus] = useState<SocketStatus>("connecting");
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const socketRef = useRef<TriageSocket | null>(null);
   const stateRef = useRef(state);
@@ -29,9 +32,10 @@ export default function TriagePage() {
     let socket: TriageSocket | null = null;
     createSession()
       .then((s) => {
+        setSessionId(s.id);
         socket = new TriageSocket(sessionWsUrl(s.id), {
           onStatus: setStatus,
-          onAssessment: (a) => { setAssessment(a); setSaved(false); },
+          onAssessment: (a) => { setAssessment(a); setSaved(false); setRefreshKey((k) => k + 1); },
           onSaved: () => setSaved(true),
           onError: (m) => setError(typeof m === "string" ? m : "Update rejected"),
         });
@@ -72,6 +76,7 @@ export default function TriagePage() {
           <SymptomForm state={state} dispatch={dispatch} />
           <VitalsForm state={state} dispatch={dispatch} />
           <RiskFactors state={state} dispatch={dispatch} />
+          <HistoryPanel sessionId={sessionId} refreshKey={refreshKey} />
         </div>
         <RiskPanel assessment={assessment} status={status} saved={saved} />
       </div>

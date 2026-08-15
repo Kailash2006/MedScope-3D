@@ -9,6 +9,7 @@ from triage_shared import DISCLAIMER, URGENCY_LEVELS
 from .core.config import settings
 from .core.db import init_db
 from .ml.prediction_service import PredictionService
+from .routers import admin as admin_router
 from .routers import sessions as sessions_router
 from .routers import triage as triage_router
 from .ws.manager import manager
@@ -41,6 +42,7 @@ app.add_middleware(
 
 app.include_router(triage_router.router)
 app.include_router(sessions_router.router)
+app.include_router(admin_router.router)
 app.include_router(ws_router)
 
 
