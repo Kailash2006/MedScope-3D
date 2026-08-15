@@ -5,8 +5,8 @@ import type { Sex, TriageState } from "../../lib/types";
 
 export function Demographics({ state, dispatch }: { state: TriageState; dispatch: (a: Action) => void }) {
   return (
-    <fieldset className="glass" style={{ padding: "1.1rem" }}>
-      <legend className="card-title">About you</legend>
+    <fieldset>
+      <legend className="sr-only">About you</legend>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".75rem" }}>
         <div>
           <label htmlFor="age" className="field-label">Age (years)</label>

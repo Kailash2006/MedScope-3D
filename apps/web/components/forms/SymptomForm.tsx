@@ -10,8 +10,8 @@ export function SymptomForm({ state, dispatch }: { state: TriageState; dispatch:
   const available = SYMPTOM_CODES.filter((c) => !state.symptoms.some((s) => s.code === c));
 
   return (
-    <fieldset className="glass" style={{ padding: "1.1rem" }}>
-      <legend className="card-title">Symptoms</legend>
+    <fieldset>
+      <legend className="sr-only">Symptoms</legend>
 
       <div style={{ display: "flex", gap: ".5rem", marginBottom: ".75rem" }}>
         <label htmlFor="add-symptom" style={{ position: "absolute", left: -9999 }}>Add a symptom</label>

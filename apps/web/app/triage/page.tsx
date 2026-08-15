@@ -4,10 +4,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import { BodyMapper } from "../../components/BodyMapper";
 import { DataRightsPanel } from "../../components/DataRightsPanel";
 import { HistoryPanel } from "../../components/HistoryPanel";
-import { Demographics } from "../../components/forms/Demographics";
-import { RiskFactors } from "../../components/forms/RiskFactors";
-import { SymptomForm } from "../../components/forms/SymptomForm";
-import { VitalsForm } from "../../components/forms/VitalsForm";
+import { IntakeConsole } from "../../components/IntakeConsole";
 import { RiskPanel } from "../../components/RiskPanel";
 import { createSession, sessionWsUrl } from "../../lib/api";
 import { reducer, toPatch } from "../../lib/triageState";
@@ -87,10 +84,7 @@ export default function TriagePage() {
         <BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} />
 
         <div style={{ display: "grid", gap: "1rem" }}>
-          <div className="rise rise-2 reveal-3d"><Demographics state={state} dispatch={dispatch} /></div>
-          <div className="rise rise-3 reveal-3d"><SymptomForm state={state} dispatch={dispatch} /></div>
-          <div className="reveal-3d"><VitalsForm state={state} dispatch={dispatch} /></div>
-          <div className="reveal-3d"><RiskFactors state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-2 reveal-3d"><IntakeConsole state={state} dispatch={dispatch} /></div>
           <div className="reveal-3d"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
           <div className="reveal-3d">
             <DataRightsPanel

@@ -6,8 +6,8 @@ import { RISK_CODES, humanize } from "../../lib/vocab";
 
 export function RiskFactors({ state, dispatch }: { state: TriageState; dispatch: (a: Action) => void }) {
   return (
-    <fieldset className="glass" style={{ padding: "1.1rem" }}>
-      <legend className="card-title">Risk factors</legend>
+    <fieldset>
+      <legend className="sr-only">Risk factors</legend>
       <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
         {RISK_CODES.map((code) => {
           const on = state.riskFactors.includes(code);

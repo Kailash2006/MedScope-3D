@@ -189,6 +189,51 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
   box-shadow: 0 6px 16px -9px rgba(34, 211, 238, 0.85);
 }
 
+/* ---------- tabbed intake console ---------- */
+.intake { padding: 0; overflow: hidden; }
+.intake-rail {
+  display: flex; gap: 3px; padding: 6px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  overflow-x: auto; scrollbar-width: none;
+}
+.intake-rail::-webkit-scrollbar { display: none; }
+.intake-tab {
+  flex: 1 1 0; min-width: max-content;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+  font: inherit; font-size: 0.82rem; cursor: pointer;
+  padding: 0.55rem 0.8rem; border-radius: 12px;
+  border: 1px solid transparent; background: transparent; color: var(--muted);
+  position: relative; transition: color 0.15s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.intake-tab:hover { color: var(--text); background: rgba(255, 255, 255, 0.03); }
+.intake-tab[data-active="true"] {
+  color: var(--text);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.16), rgba(56, 189, 248, 0.04));
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 6px 20px -12px rgba(56, 189, 248, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.intake-tab-icon { font-size: 0.95rem; color: var(--accent); line-height: 1; }
+.intake-tab[data-active="true"] .intake-tab-icon { filter: drop-shadow(0 0 6px var(--accent)); }
+.intake-badge {
+  min-width: 18px; height: 18px; padding: 0 5px;
+  display: inline-grid; place-items: center;
+  font-size: 0.66rem; font-weight: 700; border-radius: 999px;
+  color: #04121b; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+.intake-panel {
+  padding: 1.15rem; min-height: 200px;
+  animation: intakeIn 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes intakeIn { from { opacity: 0; transform: translateY(8px) scale(0.99); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .intake-panel { animation: none; } }
+@media (max-width: 420px) { .intake-tab-label { display: none; } }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
 /* ---------- layout ---------- */
 .shell { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
 .triage-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr) 340px; gap: 1.25rem; align-items: start; }

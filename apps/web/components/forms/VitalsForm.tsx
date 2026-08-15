@@ -6,8 +6,8 @@ import { VITAL_FIELDS } from "../../lib/vocab";
 
 export function VitalsForm({ state, dispatch }: { state: TriageState; dispatch: (a: Action) => void }) {
   return (
-    <fieldset className="glass" style={{ padding: "1.1rem" }}>
-      <legend className="card-title">Vitals · optional</legend>
+    <fieldset>
+      <legend className="sr-only">Vitals · optional</legend>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: ".7rem" }}>
         {VITAL_FIELDS.map((v) => {
           const cur = state.vitals[v.key as keyof Vitals];
