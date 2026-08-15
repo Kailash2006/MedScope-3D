@@ -33,9 +33,10 @@ function Region({
   useFrame((state) => {
     if (!mat.current || !mesh.current) return;
     const t = state.clock.elapsedTime;
-    const targetE = selected ? 0.7 + Math.sin(t * 3) * 0.25 : hovered ? 0.28 : 0.0;
-    mat.current.emissiveIntensity += (targetE - mat.current.emissiveIntensity) * 0.15;
-    const s = selected ? 1.06 : hovered ? 1.03 : 1;
+    // bright, pulsing emissive on selection so the bloom pass makes it radiate
+    const targetE = selected ? 2.0 + Math.sin(t * 3.2) * 0.7 : hovered ? 0.6 : 0.08;
+    mat.current.emissiveIntensity += (targetE - mat.current.emissiveIntensity) * 0.14;
+    const s = selected ? 1.07 : hovered ? 1.03 : 1;
     mesh.current.scale.x += (s - mesh.current.scale.x) * 0.15;
     mesh.current.scale.y += (s - mesh.current.scale.y) * 0.15;
     mesh.current.scale.z += (s - mesh.current.scale.z) * 0.15;
@@ -47,15 +48,14 @@ function Region({
     onPointerOut: () => { onHover(null); document.body.style.cursor = "auto"; },
   };
 
-  const color = selected ? accent : hovered ? "#41506e" : "#2b3654";
   const common = (
     <meshStandardMaterial
       ref={mat}
-      color={color}
+      color={selected ? accent : hovered ? "#44557e" : "#2b3960"}
       emissive={accent}
-      emissiveIntensity={0}
-      metalness={0.45}
-      roughness={0.35}
+      emissiveIntensity={0.08}
+      metalness={0.28}
+      roughness={0.42}
     />
   );
 

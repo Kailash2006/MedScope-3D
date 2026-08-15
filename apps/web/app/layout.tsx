@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import "./globals.css";
+import { CursorGlow } from "../components/CursorGlow";
 
 export const metadata = {
   title: "MedScope 3D — Symptom Triage (Prototype)",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <CursorGlow />
         <a href="#main" className="skip-link">Skip to content</a>
         {children}
       </body>

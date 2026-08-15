@@ -15,5 +15,11 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "overrides": {
+    "three": "0.170.0"
   }
 }

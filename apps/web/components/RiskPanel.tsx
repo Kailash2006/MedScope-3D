@@ -17,6 +17,25 @@ const STATUS_TEXT: Record<SocketStatus, string> = {
   error: "Offline",
 };
 
+function Gauge({ value, color }: { value: number; color: string }) {
+  const r = 24;
+  const circ = 2 * Math.PI * r;
+  const pct = Math.max(0, Math.min(1, value));
+  return (
+    <div style={{ position: "relative", width: 58, height: 58, flexShrink: 0 }}>
+      <svg width={58} height={58} viewBox="0 0 60 60" role="img" aria-label={`Confidence ${(pct * 100).toFixed(0)} percent`}>
+        <circle cx={30} cy={30} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={5} />
+        <circle cx={30} cy={30} r={r} fill="none" stroke={color} strokeWidth={5} strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)} transform="rotate(-90 30 30)"
+          style={{ transition: "stroke-dashoffset .6s ease", filter: `drop-shadow(0 0 5px ${color})` }} />
+      </svg>
+      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: ".76rem", fontWeight: 700 }}>
+        {(pct * 100).toFixed(0)}%
+      </div>
+    </div>
+  );
+}
+
 export function RiskPanel({ assessment, status, saved }: Props) {
   const color = assessment ? urgencyColor(assessment.urgency) : "var(--u-none)";
   const live = status === "open";
@@ -46,23 +65,16 @@ export function RiskPanel({ assessment, status, saved }: Props) {
         <div aria-live="polite" style={{ position: "relative" }}>
           {assessment ? (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: ".7rem" }}>
-                <span aria-hidden style={{ width: 16, height: 16, borderRadius: "50%", background: color, boxShadow: `0 0 20px ${color}` }} />
-                <strong style={{ fontSize: "1.75rem", color, letterSpacing: "-0.02em" }}>{urgencyLabel(assessment.urgency)}</strong>
-              </div>
-              {assessment.advice && <p style={{ margin: ".5rem 0 .2rem", color: "var(--text)", fontSize: ".95rem" }}>{assessment.advice}</p>}
-
-              {/* confidence meter */}
-              <div style={{ margin: ".8rem 0 .4rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: ".72rem", color: "var(--muted)" }}>
-                  <span>Confidence</span><span>{(assessment.confidence * 100).toFixed(0)}%</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", minWidth: 0 }}>
+                  <span aria-hidden style={{ width: 14, height: 14, borderRadius: "50%", background: color, color, boxShadow: `0 0 22px ${color}`, animation: "haloPulse 1.8s ease-in-out infinite", flexShrink: 0 }} />
+                  <strong key={assessment.urgency} className="pop" style={{ fontSize: "1.6rem", color, letterSpacing: "-0.02em", lineHeight: 1.05 }}>{urgencyLabel(assessment.urgency)}</strong>
                 </div>
-                <div style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.06)", marginTop: 4, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${Math.max(4, assessment.confidence * 100)}%`, background: `linear-gradient(90deg, ${color}, var(--accent))`, borderRadius: 999 }} />
-                </div>
+                <Gauge value={assessment.confidence} color={color} />
               </div>
+              {assessment.advice && <p style={{ margin: ".65rem 0 .3rem", color: "var(--text)", fontSize: ".95rem" }}>{assessment.advice}</p>}
 
-              <dl style={{ margin: ".5rem 0", fontSize: ".8rem", color: "var(--muted)", display: "grid", gridTemplateColumns: "auto 1fr", gap: ".22rem .7rem" }}>
+              <dl style={{ margin: ".6rem 0 .2rem", fontSize: ".8rem", color: "var(--muted)", display: "grid", gridTemplateColumns: "auto 1fr", gap: ".22rem .7rem" }}>
                 <dt>Basis</dt><dd style={{ margin: 0, color: "var(--text)" }}>{DECISION_PATH_LABEL[assessment.decision_path] ?? assessment.decision_path}</dd>
                 <dt>Model</dt><dd style={{ margin: 0 }}>{assessment.model_version}</dd>
               </dl>

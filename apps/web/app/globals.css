@@ -72,6 +72,13 @@ a { color: var(--accent-2); }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.glass:hover { border-color: var(--border-strong); box-shadow: var(--shadow), 0 0 0 1px rgba(56, 189, 248, 0.08); }
+
+.cursor-glow {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(340px circle at var(--x, 50%) var(--y, 50%), rgba(56, 189, 248, 0.07), transparent 62%);
 }
 .glass-inset {
   background: rgba(6, 12, 24, 0.55);
@@ -180,7 +187,10 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes pulseGlow { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes pop { 0% { transform: scale(0.92); opacity: 0; } 60% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes haloPulse { 0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 0.9; } 50% { box-shadow: 0 0 0 8px transparent; opacity: 0.5; } }
 .rise { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.pop { animation: pop 0.45s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
 .rise-1 { animation-delay: 0.05s; } .rise-2 { animation-delay: 0.12s; }
 .rise-3 { animation-delay: 0.19s; } .rise-4 { animation-delay: 0.26s; } .rise-5 { animation-delay: 0.33s; }
 .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; animation: pulseGlow 1.6s ease-in-out infinite; }
