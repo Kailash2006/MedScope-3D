@@ -51,7 +51,8 @@ export function VitalsChart({ title, unit, series, color = "#38bdf8" }: Props) {
         <span>{title}</span>
         <span style={{ color: "#e2e8f0" }}>{latest}</span>
       </figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" style={{ width: "100%", height: "auto", background: "#0b1120", borderRadius: 8 }}>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title} over time, latest ${latest}`} style={{ width: "100%", height: "auto", background: "var(--bg)", borderRadius: 8 }}>
+        <title>{`${title} over time, latest ${latest}`}</title>
         {body}
       </svg>
     </figure>

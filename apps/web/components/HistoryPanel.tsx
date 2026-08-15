@@ -29,7 +29,7 @@ export function HistoryPanel({ sessionId, refreshKey }: Props) {
   }, [sessionId, refreshKey]);
 
   return (
-    <section aria-labelledby="history-heading" style={{ border: "1px solid #1e293b", borderRadius: 10, padding: "1rem" }}>
+    <section aria-labelledby="history-heading" className="glass" style={{ padding: "1.1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".5rem" }}>
         <h2 id="history-heading" style={{ fontSize: "1.05rem", margin: 0 }}>History &amp; report</h2>
         {sessionId && (
@@ -37,7 +37,7 @@ export function HistoryPanel({ sessionId, refreshKey }: Props) {
             href={reportUrl(sessionId)}
             target="_blank"
             rel="noreferrer"
-            style={{ fontSize: ".82rem", padding: ".35rem .7rem", borderRadius: 6, background: "#334155", color: "#e2e8f0", textDecoration: "none" }}
+            className="chip" style={{ fontSize: ".82rem", textDecoration: "none" }}
           >
             ⬇ Clinician PDF
           </a>

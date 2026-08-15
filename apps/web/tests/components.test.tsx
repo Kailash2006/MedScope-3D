@@ -47,6 +47,6 @@ describe("RiskPanel", () => {
 
   it("prompts for input when there is no assessment", () => {
     render(<RiskPanel assessment={null} status="connecting" saved={false} />);
-    expect(screen.getByText(/Enter symptoms or vitals/i)).toBeInTheDocument();
+    expect(screen.getByText(/Add symptoms or vitals/i)).toBeInTheDocument();
   });
 });

@@ -58,7 +58,7 @@ export function DataRightsPanel({ sessionId, onDeleted }: Props) {
   }
 
   return (
-    <section aria-labelledby="data-heading" style={{ border: "1px solid #1e293b", borderRadius: 10, padding: "1rem" }}>
+    <section aria-labelledby="data-heading" className="glass" style={{ padding: "1.1rem" }}>
       <h2 id="data-heading" style={{ fontSize: "1.05rem", margin: "0 0 .5rem" }}>Your data &amp; privacy</h2>
       <p style={{ color: "#94a3b8", fontSize: ".82rem", margin: "0 0 .75rem", lineHeight: 1.5 }}>
         Anonymous, session-scoped data. Export or delete it any time. Do not enter real,

@@ -61,31 +61,45 @@ export default function TriagePage() {
   }, [state]);
 
   return (
-    <main id="main" style={{ maxWidth: 1100, margin: "0 auto", padding: "2rem 1.25rem" }}>
-      <header style={{ marginBottom: "1.5rem" }}>
-        <h1 style={{ fontSize: "1.6rem", margin: 0 }}>MedScope 3D — Symptom Triage</h1>
-        <p style={{ color: "#94a3b8", margin: ".25rem 0 0" }}>Urgency guidance only. Not a diagnosis.</p>
+    <main id="main" className="shell">
+      <header className="rise rise-1" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+        <div>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: ".5rem", fontSize: ".7rem", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)", marginBottom: ".5rem" }}>
+            <span className="live-dot" style={{ background: "var(--accent)" }} /> MedScope 3D
+          </div>
+          <h1 style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.5rem)", margin: 0 }}>
+            <span className="gradient-text">Interactive 3D Symptom Triage</span>
+          </h1>
+          <p style={{ color: "var(--muted)", margin: ".35rem 0 0", maxWidth: 560 }}>
+            Select body regions on the 3D model, add symptoms and vitals, and get live urgency guidance — never a diagnosis.
+          </p>
+        </div>
+        <a href="/admin" className="chip" style={{ textDecoration: "none" }}>Admin →</a>
       </header>
 
       {error && (
-        <div role="alert" style={{ border: "1px solid #ef4444", background: "#1f1113", color: "#fca5a5", padding: ".75rem 1rem", borderRadius: 10, marginBottom: "1rem" }}>
+        <div role="alert" className="glass rise" style={{ borderColor: "rgba(251,90,104,0.5)", color: "#ffb4bb", padding: ".8rem 1.1rem", marginBottom: "1rem" }}>
           {error}
         </div>
       )}
 
       <div className="triage-grid">
-        <div style={{ display: "grid", gap: "1.25rem" }}>
-          <BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} />
-          <Demographics state={state} dispatch={dispatch} />
-          <SymptomForm state={state} dispatch={dispatch} />
-          <VitalsForm state={state} dispatch={dispatch} />
-          <RiskFactors state={state} dispatch={dispatch} />
-          <HistoryPanel sessionId={sessionId} refreshKey={refreshKey} />
-          <DataRightsPanel
-            sessionId={sessionId}
-            onDeleted={() => { dispatch({ type: "reset" }); setSessionId(null); setSessionNonce((n) => n + 1); }}
-          />
+        <BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} />
+
+        <div style={{ display: "grid", gap: "1rem" }}>
+          <div className="rise rise-2"><Demographics state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-3"><SymptomForm state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-4"><VitalsForm state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-4"><RiskFactors state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-5"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
+          <div className="rise rise-5">
+            <DataRightsPanel
+              sessionId={sessionId}
+              onDeleted={() => { dispatch({ type: "reset" }); setSessionId(null); setSessionNonce((n) => n + 1); }}
+            />
+          </div>
         </div>
+
         <RiskPanel assessment={assessment} status={status} saved={saved} />
       </div>
     </main>
