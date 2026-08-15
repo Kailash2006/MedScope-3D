@@ -62,8 +62,9 @@ risk_src = {r: match_cols(cols, kw) for r, kw in RISK_KW.items()}
 print("symptom matches:", {k: len(v) for k, v in sym_src.items()})
 print("risk matches:", {k: len(v) for k, v in risk_src.items()})
 
-# ---- label: ESI 1-5 -> app's 5 urgency levels (1:1, keeps all 5 app levels) ----
-URG = {1:"EMERGENCY",2:"URGENT_TODAY",3:"DOCTOR_SOON",4:"ROUTINE",5:"SELF_CARE"}
+# ---- label: ESI -> app urgency. Merge ESI 1+2 -> EMERGENCY (not a 0.9% rarity);
+#      drop SELF_CARE (ESI 5 -> ROUTINE) since the model never predicts it usefully. ----
+URG = {1:"EMERGENCY",2:"EMERGENCY",3:"URGENT_TODAY",4:"DOCTOR_SOON",5:"ROUTINE"}
 esi = pd.to_numeric(raw[target], errors="coerce")
 keep = esi.isin(URG); raw = raw[keep].copy(); esi = esi[keep]
 y_str = esi.map(URG)
@@ -143,10 +144,10 @@ print("per class:", json.dumps(report["per_class"], indent=2))
 import joblib
 assert list(feat.columns) == APP_COLS, "feature order must match the app schema exactly"
 artifact = {"model":clf,"feature_columns":APP_COLS,"classes":classes,"algo":"xgboost-real-appcompat",
-    "model_version":"v2.0.0-real-appcompat","confidence_threshold":0.6,"emergency_threshold":tau,
+    "model_version":"v2.1.0-real-appcompat","confidence_threshold":0.6,"emergency_threshold":tau,
     "device_trained":device,"dataset":os.path.basename(SRC),
     "metrics":{"macro_f1":report["macro_f1"],"emergency_recall":report["emergency_recall"]},
     "note":"Real Yale ED data mapped to the app's 51-col schema; DROP-IN for PredictionService."}
-joblib.dump(artifact, "/kaggle/working/model_v2.0.0-real-appcompat.joblib")
+joblib.dump(artifact, "/kaggle/working/model_v2.1.0-real-appcompat.joblib")
 json.dump(report, open("/kaggle/working/metrics_appcompat.json","w"), indent=2)
-print("saved /kaggle/working/model_v2.0.0-real-appcompat.joblib + metrics_appcompat.json")
+print("saved /kaggle/working/model_v2.1.0-real-appcompat.joblib + metrics_appcompat.json")

@@ -84,6 +84,35 @@ XGBoost (900 trees, depth 10) on GPU; 558,029 rows after dropping missing ESI.
   as-is by the current UI without either a richer input form or a smaller model
   trained on app-collectable features only. Tracked as future work.
 
+## Metrics (SHIPPED — model v2.1.0-real-appcompat, serving in the app)
+
+The **app-compatible** real model: trained on the same Yale data but emitting
+**exactly** the app's 51-column schema (`medscope_ml.features.feature_columns()`),
+so it is a drop-in for `PredictionService`. Script:
+`ml/notebooks/kaggle_appcompat_train.py`. ESI 1+2→EMERGENCY, 3→URGENT_TODAY,
+4→DOCTOR_SOON, 5→ROUTINE (4 classes; SELF_CARE not produced by ML).
+
+- **Macro-F1: 0.34** (4 classes) — capped by the app's sparse inputs (11 symptoms
+  + vitals vs the rich model's 287 features).
+- **EMERGENCY: P0.39 / R0.88 / F0.54** — strong recall on the class that matters.
+- URGENT_TODAY F0.40 · DOCTOR_SOON F0.42 · ROUTINE F0.001 (rare, ~never predicted).
+
+**Why it's shipped despite the low macro-F1:** the app is rules-first (the
+deterministic red-flag engine catches emergencies), and this model's role is only
+the non-red-flag ML baseline. Its profile is *safe*: strong emergency recall,
+conservative (over-triage-leaning) errors, never confidently sends people home.
+
+**Serving guard:** raw, the model **over-triages** (a mild headache scored
+EMERGENCY at conf 0.64). The artifact's `confidence_threshold` is set to **0.80**,
+so only confident calls stand; low-confidence predictions route to the engine's
+conservative fallback (verified live: headache → DOCTOR_SOON via FALLBACK_LOW_CONF;
+SpO₂ 85 → EMERGENCY via the rules). This is the first model trained on **real**
+external data actually serving in the app.
+
+> Still **not clinically validated**. Real ESI labels are noisy; the app-input
+> ceiling (~0.34 macro-F1) reflects that the UI collects far less than triage
+> nurses record. A genuinely strong in-app model needs richer inputs.
+
 ## Fallback behavior
 
 Low confidence, missing required fields, model load/predict error, or severe
