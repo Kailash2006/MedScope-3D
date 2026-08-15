@@ -16,6 +16,20 @@ Living list of accepted-for-now gaps. Reviewed each phase.
   (`apps/web/server.js` + `node_modules`) and launch `node apps/web/server.js`.
   A `web` healthcheck was also added so compose reports it healthy, not just running.
 
+## Frontend (Phase 4)
+
+- **Lighthouse a11y ≥ 95 not formally measured.** The UI was built to WCAG AA
+  intent — semantic fieldsets/labels, `aria-pressed` region toggles, `aria-live`
+  risk panel, visible focus rings, a skip link, keyboard-parity region selector,
+  and no overlapping text (verified visually in the live app). Component tests
+  assert the accessible roles/labels. But a real Lighthouse/axe score was **not**
+  run in this environment. **Action:** run Lighthouse + axe (e.g. via the
+  Playwright path deferred earlier) and record the score before claiming the AC
+  numerically. Same honesty boundary as prior "proven-by-construction" gaps.
+- **Full keyboard-only run not scripted.** Structure supports it and was spot-
+  checked, but there is no automated keyboard-only E2E yet (deferred with the
+  Playwright option).
+
 ## API / real-time (Phase 3)
 
 - **DB schema via `create_all`, not Alembic yet.** Tables are created from the

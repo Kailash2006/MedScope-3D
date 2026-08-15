@@ -60,8 +60,21 @@ export default function Home() {
         ))}
       </ul>
 
-      <p style={{ color: "#64748b", fontSize: ".85rem", marginTop: "2rem" }}>
-        Phase 0 scaffold. The 3D symptom mapper, live risk engine, and reports arrive in later phases.
+      <p style={{ marginTop: "2rem" }}>
+        <a
+          href="/triage"
+          style={{
+            display: "inline-block",
+            padding: ".7rem 1.2rem",
+            borderRadius: 8,
+            background: "#0ea5e9",
+            color: "#001018",
+            fontWeight: 600,
+            textDecoration: "none",
+          }}
+        >
+          Start a triage session →
+        </a>
       </p>
     </main>
   );
