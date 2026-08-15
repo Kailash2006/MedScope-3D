@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy import func
 from sqlalchemy.orm import Session as OrmSession
 
+from ..compliance import purge_expired
 from ..core.config import settings
 from ..core.db import get_db
 from ..deps import get_predictor
@@ -71,3 +72,9 @@ def models(predictor=Depends(get_predictor)) -> dict:
         "engine_version": settings.engine_version,
         "confidence_threshold": settings.ml_confidence_threshold,
     }
+
+
+@router.post("/purge")
+def purge_now(db: OrmSession = Depends(get_db)) -> dict:
+    """Manually run the retention purge (also runs automatically on a schedule)."""
+    return {"purged_sessions": purge_expired(db)}

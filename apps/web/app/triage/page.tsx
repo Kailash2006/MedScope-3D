@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useRef, useState } from "react";
 import { BodyMapper } from "../../components/BodyMapper";
+import { DataRightsPanel } from "../../components/DataRightsPanel";
 import { HistoryPanel } from "../../components/HistoryPanel";
 import { Demographics } from "../../components/forms/Demographics";
 import { RiskFactors } from "../../components/forms/RiskFactors";
@@ -21,15 +22,18 @@ export default function TriagePage() {
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [sessionNonce, setSessionNonce] = useState(0);
 
   const socketRef = useRef<TriageSocket | null>(null);
   const stateRef = useRef(state);
   stateRef.current = state;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Bootstrap: create a session, then open the live socket.
+  // Bootstrap: create a session, then open the live socket. Re-runs when
+  // sessionNonce changes (e.g. after the user deletes their data).
   useEffect(() => {
     let socket: TriageSocket | null = null;
+    setAssessment(null);
     createSession()
       .then((s) => {
         setSessionId(s.id);
@@ -44,7 +48,7 @@ export default function TriagePage() {
       })
       .catch(() => setError("Could not start a session. Is the API running?"));
     return () => socket?.close();
-  }, []);
+  }, [sessionNonce]);
 
   // Debounced autosave: push patches as the form changes.
   useEffect(() => {
@@ -77,6 +81,10 @@ export default function TriagePage() {
           <VitalsForm state={state} dispatch={dispatch} />
           <RiskFactors state={state} dispatch={dispatch} />
           <HistoryPanel sessionId={sessionId} refreshKey={refreshKey} />
+          <DataRightsPanel
+            sessionId={sessionId}
+            onDeleted={() => { dispatch({ type: "reset" }); setSessionId(null); setSessionNonce((n) => n + 1); }}
+          />
         </div>
         <RiskPanel assessment={assessment} status={status} saved={saved} />
       </div>

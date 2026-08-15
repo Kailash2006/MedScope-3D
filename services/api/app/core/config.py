@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # Empty => admin endpoints are disabled (return 403 for everyone).
     admin_token: str = ""
 
+    # Retention purge job cadence (seconds). 0 disables the background scheduler.
+    purge_interval_seconds: int = 3600
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from datetime import timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session as OrmSession
 
 from ..audit import logger as audit
+from ..compliance import delete_session, export_bundle
 from ..core.db import get_db
 from ..deps import get_predictor
 from ..models.db import Assessment, Session
@@ -11,6 +15,10 @@ from ..report.pdf import build_report
 from ..schemas.session import SessionCreate, SessionOut, SessionUpdate
 from ..session_service import apply_patch, latest_assessment, recompute_and_store
 from ..triage.models import TriageResult, Vitals
+
+
+class RetentionUpdate(BaseModel):
+    retention_days: int = Field(ge=1, le=3650)
 
 router = APIRouter(prefix="/api/v1/sessions", tags=["sessions"])
 
@@ -127,3 +135,33 @@ def session_report(session_id: str, request: Request, db: OrmSession = Depends(g
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="medscope-report-{session_id[:8]}.pdf"'},
     )
+
+
+@router.get("/{session_id}/export")
+def export_session(session_id: str, request: Request, db: OrmSession = Depends(get_db)) -> dict:
+    """Export all data tied to this session (data-rights / GDPR)."""
+    row = _get_or_404(db, session_id)
+    bundle = export_bundle(db, row)
+    audit.record(db, "session.export", "session", session_id, ip=_client_ip(request))
+    db.commit()
+    return bundle
+
+
+@router.delete("/{session_id}", status_code=200)
+def delete_session_endpoint(session_id: str, request: Request, db: OrmSession = Depends(get_db)) -> dict:
+    """Hard-delete this session and all cascaded assessments (data-rights / GDPR)."""
+    row = _get_or_404(db, session_id)
+    n = delete_session(db, row, ip=_client_ip(request))
+    return {"deleted": True, "session_id": session_id, "assessments_deleted": n}
+
+
+@router.patch("/{session_id}/retention", response_model=SessionOut)
+def set_retention(session_id: str, payload: RetentionUpdate, request: Request,
+                  db: OrmSession = Depends(get_db)) -> SessionOut:
+    """Adjust this session's retention window (moves expires_at)."""
+    row = _get_or_404(db, session_id)
+    row.expires_at = row.created_at + timedelta(days=payload.retention_days)
+    audit.record(db, "session.set_retention", "session", session_id, ip=_client_ip(request),
+                 meta={"retention_days": payload.retention_days})
+    db.commit()
+    return _to_out(row, latest_assessment(db, session_id))

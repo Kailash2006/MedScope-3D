@@ -16,10 +16,21 @@
   automatic purge job on `sessions` and cascaded children.
 - Audit logs use a separate, longer window (default 365 days) for compliance.
 
-## User data rights (Phase 6)
+## User data rights (implemented)
 
-- **Export:** `GET /me/export` returns all user data (JSON/ZIP).
-- **Delete:** `DELETE /me/data` soft-deletes then purges all cascaded rows.
+Data is anonymous and **session-scoped**, so "your data" == the session the client
+holds (per-account aggregation lands with full auth in a later phase).
+
+- **Export:** `GET /api/v1/sessions/{id}/export` returns a full JSON bundle
+  (session + assessments + this session's audit rows + disclaimer + privacy note).
+- **Delete:** `DELETE /api/v1/sessions/{id}` hard-deletes the session and all
+  cascaded assessments (writes a no-PHI audit row first), returning a 404 after.
+- **Retention:** `PATCH /api/v1/sessions/{id}/retention` moves `expires_at`;
+  `GET /api/v1/settings/retention` reports the defaults.
+- **Automatic purge:** a background scheduler (`PURGE_INTERVAL_SECONDS`) removes
+  sessions past `expires_at`; `POST /api/v1/admin/purge` triggers it manually.
+- The frontend surfaces all of this in a "Your data & privacy" panel
+  (export / delete with two-step confirm / retention).
 
 ## Audit logging
 

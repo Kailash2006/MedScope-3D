@@ -64,3 +64,20 @@ export async function adminDashboard(token: string): Promise<Record<string, unkn
   if (res.status === 403) throw new Error("forbidden");
   return json<Record<string, unknown>>(res);
 }
+
+export async function exportSession(id: string): Promise<unknown> {
+  return json<unknown>(await fetch(`${API_BASE}/api/v1/sessions/${id}/export`));
+}
+
+export async function deleteSession(id: string): Promise<{ deleted: boolean; assessments_deleted: number }> {
+  return json(await fetch(`${API_BASE}/api/v1/sessions/${id}`, { method: "DELETE" }));
+}
+
+export async function setRetention(id: string, retention_days: number): Promise<SessionOut> {
+  const res = await fetch(`${API_BASE}/api/v1/sessions/${id}/retention`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ retention_days }),
+  });
+  return json<SessionOut>(res);
+}

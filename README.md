@@ -61,5 +61,5 @@ cd services/api && pip install -e ".[dev]" && pytest
 - [x] **Phase 3** — Triage API + real-time (PredictionService, sessions, WebSocket)
 - [x] **Phase 4** — Frontend core (3D body mapper, live risk panel, 2D fallback, a11y)
 - [x] **Phase 5** — History, charts, clinician PDF, admin safety dashboard (RBAC)
-- [ ] Phase 6 — Compliance & data rights
+- [x] **Phase 6** — Compliance & data rights (export/delete, retention, purge, privacy)
 - [ ] Phase 7 — Hardening & deployment
