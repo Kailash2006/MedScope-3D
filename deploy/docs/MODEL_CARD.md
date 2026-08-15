@@ -55,6 +55,35 @@ when it is used to produce the released artifact.
 > These metrics are on **synthetic, rule-seeded data** and do not represent
 > clinical performance.
 
+## Metrics (REAL data — model real-v1.1.0, Kaggle GPU run)
+
+Trained on the **real Yale EMMLC ED triage dataset** (`maalona/hospital-triage-and-
+patient-history-data`): **560,486 de-identified ED visits**, ESI acuity label +
+triage vitals + 200 chief-complaint columns + arrival/prior-visit history. No
+synthetic data. Script: `ml/notebooks/kaggle_real_train.py`.
+
+Pipeline: `ESI 1+2 → EMERGENCY` (standard high-acuity merge), `3 → URGENT_TODAY`,
+`4 → DOCTOR_SOON`, `5 → ROUTINE` (SELF_CARE not applicable — all rows are ED
+visits). 287 features (vitals + chief complaints + arrival/history; protected
+attributes and post-visit/leakage columns deliberately excluded). Calibrated
+XGBoost (900 trees, depth 10) on GPU; 558,029 rows after dropping missing ESI.
+
+- **Macro-F1: 0.675** (4 classes)   Brier (mean OvR): **0.099**   Under-triage: 0.109
+- **EMERGENCY: precision 0.68 / recall 0.84 / F1 0.75** (support 25,321)
+- URGENT_TODAY F1 0.68 · DOCTOR_SOON F1 0.71 · ROUTINE F1 0.56
+- Emergency decision threshold τ=0.50 (argmax — EMERGENCY is a ~30% class, no hack needed)
+
+**Honest notes:**
+- This is a **real, honest** result — much harder than the circular synthetic
+  0.744. The 0.675 is over **4 classes** (ESI 1+2 merged), so it is *not* directly
+  comparable to the 5-class synthetic number.
+- **Not clinically validated.** ESI labels carry inter-rater variability; the
+  ESI→urgency mapping is a defensible convention, not a clinical standard.
+- **Serving mismatch:** this model expects 287 columns (incl. 200 chief-complaint
+  flags + history). The app collects far fewer inputs, so it cannot be served
+  as-is by the current UI without either a richer input form or a smaller model
+  trained on app-collectable features only. Tracked as future work.
+
 ## Fallback behavior
 
 Low confidence, missing required fields, model load/predict error, or severe
