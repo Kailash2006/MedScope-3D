@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { DECISION_PATH_LABEL, urgencyColor, urgencyLabel } from "../lib/urgency";
-import type { Assessment } from "../lib/types";
+import { carePlan, doctorSummary } from "../lib/guidance";
+import type { Assessment, TriageState } from "../lib/types";
 import type { SocketStatus } from "../lib/ws";
 
 interface Props {
   assessment: Assessment | null;
   status: SocketStatus;
   saved: boolean;
+  state: TriageState;
 }
 
 const STATUS_TEXT: Record<SocketStatus, string> = {
@@ -36,22 +39,23 @@ function Gauge({ value, color }: { value: number; color: string }) {
   );
 }
 
-export function RiskPanel({ assessment, status, saved }: Props) {
+export function RiskPanel({ assessment, status, saved, state }: Props) {
   const color = assessment ? urgencyColor(assessment.urgency) : "var(--u-none)";
   const live = status === "open";
+  const plan = assessment ? carePlan(assessment.urgency) : null;
+  const [copied, setCopied] = useState(false);
+
+  function copySummary() {
+    const text = doctorSummary(state, assessment);
+    navigator.clipboard?.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    }).catch(() => {});
+  }
 
   return (
     <aside className="risk-aside rise rise-3" aria-label="Urgency assessment" style={{ position: "sticky", top: "1rem", display: "grid", gap: ".7rem" }}>
-      <div
-        className="glass"
-        style={{
-          padding: "1.2rem",
-          position: "relative",
-          overflow: "hidden",
-          borderColor: assessment ? `${color}55` : "var(--border)",
-        }}
-      >
-        {/* colored halo */}
+      <div className="glass" style={{ padding: "1.2rem", position: "relative", overflow: "hidden", borderColor: assessment ? `${color}55` : "var(--border)" }}>
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(90% 60% at 50% -10%, ${color}22, transparent 60%)`, pointerEvents: "none" }} />
 
         <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".7rem" }}>
@@ -63,7 +67,7 @@ export function RiskPanel({ assessment, status, saved }: Props) {
         </div>
 
         <div aria-live="polite" style={{ position: "relative" }}>
-          {assessment ? (
+          {assessment && plan ? (
             <>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", minWidth: 0 }}>
@@ -72,18 +76,39 @@ export function RiskPanel({ assessment, status, saved }: Props) {
                 </div>
                 <Gauge value={assessment.confidence} color={color} />
               </div>
-              {assessment.advice && <p style={{ margin: ".65rem 0 .3rem", color: "var(--text)", fontSize: ".95rem" }}>{assessment.advice}</p>}
 
-              <dl style={{ margin: ".6rem 0 .2rem", fontSize: ".8rem", color: "var(--muted)", display: "grid", gridTemplateColumns: "auto 1fr", gap: ".22rem .7rem" }}>
+              {/* Actionable next-step banner */}
+              <div key={plan.headline} className="pop" style={{ marginTop: ".8rem", borderRadius: 12, padding: ".7rem .85rem", background: `${color}18`, border: `1px solid ${color}55` }}>
+                <div style={{ fontWeight: 700, color, fontSize: ".98rem" }}>{plan.headline}</div>
+                <div style={{ color: "var(--text)", fontSize: ".82rem", marginTop: ".15rem", lineHeight: 1.4 }}>{plan.detail}</div>
+              </div>
+
+              <dl style={{ margin: ".8rem 0 .2rem", fontSize: ".8rem", color: "var(--muted)", display: "grid", gridTemplateColumns: "auto 1fr", gap: ".22rem .7rem" }}>
                 <dt>Basis</dt><dd style={{ margin: 0, color: "var(--text)" }}>{DECISION_PATH_LABEL[assessment.decision_path] ?? assessment.decision_path}</dd>
-                <dt>Model</dt><dd style={{ margin: 0 }}>{assessment.model_version}</dd>
+                <dt>Confidence</dt><dd style={{ margin: 0 }}>{(assessment.confidence * 100).toFixed(0)}% · {assessment.model_version === "none" ? "rules only" : assessment.model_version}</dd>
               </dl>
 
               {assessment.reasons.length > 0 && (
-                <ul style={{ margin: ".3rem 0 0", paddingLeft: "1.1rem", fontSize: ".8rem", color: "var(--muted)" }}>
-                  {assessment.reasons.slice(0, 5).map((r, i) => <li key={i}>{r.message}</li>)}
-                </ul>
+                <>
+                  <p style={{ margin: ".5rem 0 .25rem", fontSize: ".72rem", textTransform: "uppercase", letterSpacing: ".12em", color: "var(--muted)" }}>Why</p>
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: ".8rem", color: "var(--muted)" }}>
+                    {assessment.reasons.slice(0, 5).map((r, i) => <li key={i}>{r.message}</li>)}
+                  </ul>
+                </>
               )}
+
+              {/* What to tell your doctor */}
+              <div style={{ marginTop: "1rem", borderTop: "1px solid var(--border)", paddingTop: ".9rem" }}>
+                <button type="button" className="btn btn-primary" onClick={copySummary} style={{ width: "100%", padding: ".6rem" }}>
+                  {copied ? "✓ Copied" : "📋 Copy summary for your doctor"}
+                </button>
+                <details style={{ marginTop: ".6rem" }}>
+                  <summary style={{ cursor: "pointer", fontSize: ".78rem", color: "var(--muted)" }}>Preview summary</summary>
+                  <pre style={{ marginTop: ".5rem", whiteSpace: "pre-wrap", fontSize: ".74rem", color: "var(--muted)", background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 10, padding: ".7rem .8rem", maxHeight: 240, overflow: "auto" }}>
+                    {doctorSummary(state, assessment)}
+                  </pre>
+                </details>
+              </div>
             </>
           ) : (
             <p style={{ color: "var(--muted)" }}>Add symptoms or vitals to see live urgency guidance.</p>

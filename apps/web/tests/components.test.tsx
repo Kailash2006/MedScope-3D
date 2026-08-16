@@ -5,6 +5,7 @@ import { RegionSelector } from "../components/RegionSelector";
 import { SvgBodyMap } from "../components/SvgBodyMap";
 import { RiskPanel } from "../components/RiskPanel";
 import type { Assessment } from "../lib/types";
+import { emptyState } from "../lib/types";
 
 describe("RegionSelector", () => {
   it("reflects selection via aria-pressed and toggles on click", async () => {
@@ -39,14 +40,14 @@ describe("RiskPanel", () => {
   };
 
   it("shows urgency label, basis, and reasons", () => {
-    render(<RiskPanel assessment={assessment} status="open" saved />);
+    render(<RiskPanel assessment={assessment} status="open" saved state={emptyState()} />);
     expect(screen.getByText("Emergency")).toBeInTheDocument();
     expect(screen.getByText("Vitals red flag")).toBeInTheDocument();
     expect(screen.getByText("Hypoxia")).toBeInTheDocument();
   });
 
   it("prompts for input when there is no assessment", () => {
-    render(<RiskPanel assessment={null} status="connecting" saved={false} />);
+    render(<RiskPanel assessment={null} status="connecting" saved={false} state={emptyState()} />);
     expect(screen.getByText(/Add symptoms or vitals/i)).toBeInTheDocument();
   });
 });
