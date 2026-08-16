@@ -3,6 +3,13 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
+# Ride out transient PyPI / files.pythonhosted.org 502s during the build: more
+# retries and a longer socket timeout for every `pip install` below. 502 is in
+# pip's retry status list, so raising the retry count directly mitigates the
+# "too many 502 error responses" failure. This changes only network resilience,
+# not which package versions are resolved (build stays deterministic).
+ENV PIP_RETRIES=10 PIP_DEFAULT_TIMEOUT=100
+
 WORKDIR /app
 
 # Install shared Python contracts first (single source of truth for UrgencyLevel etc.)
