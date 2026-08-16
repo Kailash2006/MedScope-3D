@@ -80,7 +80,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           )}
         </p>
         <p style={{ color: "var(--muted-2)", fontSize: ".72rem", marginTop: ".8rem", textAlign: "center" }}>
-          Research/education prototype. Do not use real, identifiable health info.
+          MedScope can make mistakes — please double-check.
         </p>
       </div>
     </main>
