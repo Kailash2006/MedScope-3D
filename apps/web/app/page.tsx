@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { URGENCY_LEVELS, labelOf, type UrgencyLevel } from "@medscope/triage-shared";
 import { urgencyColor } from "../lib/urgency";
+import { AuthNav } from "../components/AuthNav";
 
 const MedicalHero = dynamic(() => import("../components/three/MedicalHero"), {
   ssr: false,
@@ -12,6 +13,9 @@ const MedicalHero = dynamic(() => import("../components/three/MedicalHero"), {
 export default function Home() {
   return (
     <main id="main" className="shell" style={{ minHeight: "100vh", display: "grid", alignItems: "center" }}>
+      <header style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", justifyContent: "flex-end", padding: "1.25rem 1.5rem", zIndex: 2 }}>
+        <AuthNav />
+      </header>
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "2rem", alignItems: "center" }} className="hero-grid">
         <div className="rise rise-1">
           <div style={{ display: "inline-flex", alignItems: "center", gap: ".5rem", fontSize: ".72rem", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "1rem" }}>

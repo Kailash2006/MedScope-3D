@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session as OrmSession
 
 from ..audit import logger as audit
+from ..auth.service import current_user_optional
 from ..compliance import delete_session, export_bundle
 from ..core.db import get_db
 from ..deps import get_predictor
@@ -54,8 +55,10 @@ def _get_or_404(db: OrmSession, session_id: str) -> Session:
 
 
 @router.post("", response_model=SessionOut, status_code=201)
-def create_session(payload: SessionCreate, request: Request, db: OrmSession = Depends(get_db)) -> SessionOut:
-    row = Session(age=payload.age, sex=payload.sex)
+def create_session(payload: SessionCreate, request: Request, db: OrmSession = Depends(get_db),
+                   user=Depends(current_user_optional)) -> SessionOut:
+    # Anonymous by default; attach to the user when a valid bearer token is sent.
+    row = Session(age=payload.age, sex=payload.sex, user_id=user.id if user else None)
     db.add(row)
     db.flush()
     audit.record(db, "session.create", "session", row.id, ip=_client_ip(request))

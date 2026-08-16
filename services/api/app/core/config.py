@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
     session_secret: str = "change_me_dev_only_min_32_chars_please"
 
+    # Auth (email + password → JWT bearer). jwt_secret falls back to session_secret.
+    jwt_secret: str = ""
+    jwt_expire_minutes: int = 60 * 24 * 7  # 7 days
+    # Comma-separated emails that are granted the admin role on register/login.
+    admin_emails: str = ""
+
     ml_artifact_dir: str = "/app/ml/artifacts"
     ml_confidence_threshold: float = 0.6
 
@@ -36,6 +42,14 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def jwt_signing_secret(self) -> str:
+        return self.jwt_secret or self.session_secret
+
+    @property
+    def admin_email_list(self) -> list[str]:
+        return [e.strip().lower() for e in self.admin_emails.split(",") if e.strip()]
 
 
 settings = Settings()

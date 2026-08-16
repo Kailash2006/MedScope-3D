@@ -6,6 +6,7 @@ import { DataRightsPanel } from "../../components/DataRightsPanel";
 import { HistoryPanel } from "../../components/HistoryPanel";
 import { IntakeConsole } from "../../components/IntakeConsole";
 import { RiskPanel } from "../../components/RiskPanel";
+import { AuthNav } from "../../components/AuthNav";
 import { createSession, sessionWsUrl } from "../../lib/api";
 import { reducer, toPatch } from "../../lib/triageState";
 import { emptyState, type Assessment } from "../../lib/types";
@@ -71,7 +72,7 @@ export default function TriagePage() {
             Select body regions on the 3D model, add symptoms and vitals, and get live urgency guidance — never a diagnosis.
           </p>
         </div>
-        <a href="/admin" className="chip" style={{ textDecoration: "none" }}>Admin →</a>
+        <AuthNav />
       </header>
 
       {error && (

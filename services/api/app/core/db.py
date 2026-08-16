@@ -22,7 +22,20 @@ def init_db() -> None:
     # Prototype: create tables from models. Alembic migrations are a Phase 7 item.
     from ..models import db as _models  # noqa: F401  (ensure models are registered)
 
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)  # creates any NEW tables (e.g. users)
+
+    # Lightweight, idempotent column migration for the auth feature: create_all
+    # does not ALTER an existing `sessions` table, so add `user_id` if missing.
+    # Works on Postgres (Neon) and SQLite; skipped when the column already exists
+    # (fresh test DBs already have it from create_all).
+    from sqlalchemy import inspect, text
+
+    insp = inspect(engine)
+    if "sessions" in insp.get_table_names():
+        cols = {c["name"] for c in insp.get_columns("sessions")}
+        if "user_id" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE sessions ADD COLUMN user_id VARCHAR(36)"))
 
 
 def get_db() -> Iterator[Session]:

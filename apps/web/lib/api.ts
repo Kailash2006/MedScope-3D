@@ -1,4 +1,5 @@
 import type { Assessment } from "./types";
+import { authHeader } from "./auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 const WS_BASE = process.env.NEXT_PUBLIC_WS_BASE_URL ?? "ws://localhost:8000";
@@ -17,7 +18,7 @@ async function json<T>(res: Response): Promise<T> {
 export async function createSession(age?: number | null, sex?: string | null): Promise<SessionOut> {
   const res = await fetch(`${API_BASE}/api/v1/sessions`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify({ age: age ?? null, sex: sex ?? null }),
   });
   return json<SessionOut>(res);
@@ -57,11 +58,13 @@ export function reportUrl(id: string): string {
   return `${API_BASE}/api/v1/sessions/${id}/report.pdf`;
 }
 
-export async function adminDashboard(token: string): Promise<Record<string, unknown>> {
-  const res = await fetch(`${API_BASE}/api/v1/admin/dashboard`, {
-    headers: { "X-Admin-Token": token },
-  });
-  if (res.status === 403) throw new Error("forbidden");
+export async function adminDashboard(token?: string): Promise<Record<string, unknown>> {
+  // Admin access via the logged-in admin JWT (authHeader) and/or the legacy
+  // shared token, whichever is present.
+  const headers: Record<string, string> = { ...authHeader() };
+  if (token) headers["X-Admin-Token"] = token;
+  const res = await fetch(`${API_BASE}/api/v1/admin/dashboard`, { headers });
+  if (res.status === 403 || res.status === 401) throw new Error("forbidden");
   return json<Record<string, unknown>>(res);
 }
 

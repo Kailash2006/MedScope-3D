@@ -13,6 +13,7 @@ from .core.config import settings
 from .core.db import SessionLocal, init_db
 from .ml.prediction_service import PredictionService
 from .routers import admin as admin_router
+from .routers import auth as auth_router
 from .routers import sessions as sessions_router
 from .routers import settings as settings_router
 from .routers import triage as triage_router
@@ -67,6 +68,7 @@ app.add_middleware(
 )
 
 app.include_router(triage_router.router)
+app.include_router(auth_router.router)
 app.include_router(sessions_router.router)
 app.include_router(admin_router.router)
 app.include_router(settings_router.router)

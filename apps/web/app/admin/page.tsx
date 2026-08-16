@@ -54,18 +54,25 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const load = useCallback((t: string) => {
+  const load = useCallback((t?: string) => {
     setLoading(true);
     setError(null);
     adminDashboard(t)
-      .then((d) => { setData(d as unknown as Dashboard); localStorage.setItem(TOKEN_KEY, t); })
-      .catch((e) => setError(e.message === "forbidden" ? "Invalid or missing admin token." : "Failed to load."))
+      .then((d) => { setData(d as unknown as Dashboard); if (t) localStorage.setItem(TOKEN_KEY, t); })
+      .catch((e) => setError(e.message === "forbidden" ? "Invalid or missing admin credentials." : "Failed to load."))
       .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem(TOKEN_KEY);
-    if (saved) { setToken(saved); load(saved); }
+    // Prefer the logged-in admin account (JWT). Fall back to a saved shared token.
+    setLoading(true);
+    adminDashboard()
+      .then((d) => setData(d as unknown as Dashboard))
+      .catch(() => {
+        const saved = localStorage.getItem(TOKEN_KEY);
+        if (saved) { setToken(saved); load(saved); }
+      })
+      .finally(() => setLoading(false));
   }, [load]);
 
   return (
