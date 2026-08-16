@@ -32,6 +32,27 @@ const PATH_COLOR: Record<string, string> = {
   FALLBACK_MODEL_ERROR: "var(--muted-2)",
 };
 
+const pct = (x: number) => `${Math.round(x * 100)}%`;
+
+// Plain-language clinical interpretation of the aggregate metrics.
+function clinicalRead(d: Dashboard): { text: string; tone: string }[] {
+  const A = Math.max(1, d.totals.assessments);
+  const emergencies = d.urgency_distribution.EMERGENCY ?? 0;
+  const mlCount = d.decision_path_distribution.ML ?? 0;
+  const out: { text: string; tone: string }[] = [
+    { tone: "var(--u-emergency)", text: `${emergencies} of ${d.totals.assessments} assessments (${pct(emergencies / A)}) reached Emergency — each gated by red-flag rules that run before the model.` },
+    { tone: "var(--u-routine)", text: `Red-flag rules escalated ${pct(d.safety.red_flag_rate)} of cases. Rules run first and only escalate, so the model can never lower the safety net.` },
+    { tone: "var(--u-doctor)", text: `${pct(d.safety.fallback_rate)} routed to a conservative fallback — the engine errs toward more care when confidence is low or inputs are thin.` },
+    { tone: "var(--accent-2)", text: `The ML model was the deciding path in ${pct(mlCount / A)} of assessments${d.safety.avg_confidence != null ? `, at a mean confidence of ${pct(d.safety.avg_confidence)}` : ""}.` },
+  ];
+  out.push(
+    d.model.ready
+      ? { tone: "var(--accent-3)", text: `Model ${d.model.model_version ?? "active"} is live; low-confidence calls are held back from directly setting urgency.` }
+      : { tone: "var(--u-doctor)", text: `No ML model loaded — running rules-only. Triage stays safe via the deterministic red-flag engine.` },
+  );
+  return out;
+}
+
 export default function AdminPage() {
   const [token, setToken] = useState("");
   const [data, setData] = useState<Dashboard | null>(null);
@@ -88,20 +109,68 @@ export default function AdminPage() {
       </header>
 
       {!data && (
-        <div className="glass rise rise-2" style={{ padding: "1.5rem", maxWidth: 460 }}>
-          <p className="card-title">Restricted</p>
-          <p style={{ color: "var(--muted)", marginTop: 0, fontSize: ".9rem" }}>
-            Log in with an admin account to view this dashboard automatically, or enter the shared admin token.
-          </p>
-          <form onSubmit={(e) => { e.preventDefault(); load(token); }} style={{ display: "flex", gap: ".5rem", marginTop: ".8rem" }}>
-            <label htmlFor="admin-token" className="sr-only">Admin token</label>
-            <input id="admin-token" type="password" className="input" value={token} placeholder="Admin token (optional)" onChange={(e) => setToken(e.target.value)} style={{ flex: 1 }} />
-            <button type="submit" className="btn btn-primary">{loading ? "…" : "Load"}</button>
-          </form>
-          {error && <div role="alert" style={{ marginTop: ".8rem", color: "#ffb4bb", fontSize: ".85rem" }}>{error}</div>}
-          <p style={{ marginTop: "1rem", fontSize: ".8rem", color: "var(--muted-2)" }}>
-            Not an admin? <a href="/login" style={{ color: "var(--accent-2)" }}>Log in</a> or <a href="/triage" style={{ color: "var(--accent-2)" }}>go to triage</a>.
-          </p>
+        <div className="dash-grid rise rise-2" style={{ gap: "1.5rem" }}>
+          <div className="gate-grid">
+            {/* sign-in card */}
+            <div className="glass" style={{ padding: "1.5rem", alignSelf: "start" }}>
+              <p className="card-title">Clinician sign-in</p>
+              <p style={{ color: "var(--muted)", marginTop: 0, fontSize: ".9rem" }}>
+                Log in with an admin account to open the console automatically, or enter the shared admin token.
+              </p>
+              <form onSubmit={(e) => { e.preventDefault(); load(token); }} style={{ display: "flex", gap: ".5rem", marginTop: ".8rem" }}>
+                <label htmlFor="admin-token" className="sr-only">Admin token</label>
+                <input id="admin-token" type="password" className="input" value={token} placeholder="Admin token (optional)" onChange={(e) => setToken(e.target.value)} style={{ flex: 1 }} />
+                <button type="submit" className="btn btn-primary">{loading ? "…" : "Load"}</button>
+              </form>
+              {error && <div role="alert" style={{ marginTop: ".8rem", color: "#ffb4bb", fontSize: ".85rem" }}>{error}</div>}
+              <div style={{ display: "flex", gap: ".5rem", marginTop: "1rem" }}>
+                <a href="/login" className="btn btn-primary" style={{ textDecoration: "none", flex: 1, textAlign: "center", padding: ".6rem" }}>Log in</a>
+                <a href="/register" className="btn" style={{ textDecoration: "none", flex: 1, textAlign: "center", padding: ".6rem" }}>Create account</a>
+              </div>
+              <p style={{ marginTop: ".9rem", fontSize: ".78rem", color: "var(--muted-2)", textAlign: "center" }}>
+                Just here to triage? <a href="/triage" style={{ color: "var(--accent-2)" }}>Open the triage console →</a>
+              </p>
+            </div>
+
+            {/* what the console monitors */}
+            <div style={{ display: "grid", gap: "1rem" }}>
+              <div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: ".5rem", fontSize: ".7rem", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)", marginBottom: ".4rem" }}>
+                  <span className="live-dot" style={{ background: "var(--u-routine)" }} /> Clinical operations console
+                </div>
+                <p style={{ margin: 0, color: "var(--muted)", fontSize: ".95rem", maxWidth: 620 }}>
+                  A single pane of glass over every triage decision — what fired, how urgent, and whether the safety net held. Sign in to see live figures.
+                </p>
+              </div>
+              <div className="cap-grid">
+                {[
+                  { icon: "🫀", tint: "var(--u-routine)", title: "Live safety metrics", desc: "Red-flag and fallback rates across every session, refreshed on demand." },
+                  { icon: "⚑", tint: "var(--u-emergency)", title: "Emergency capture", desc: "How often red-flag rules escalate — rules run first and only ever escalate." },
+                  { icon: "🔀", tint: "var(--accent-2)", title: "Decision-path analytics", desc: "See whether each case was decided by rules, the ML model, or a conservative fallback." },
+                  { icon: "📈", tint: "var(--accent-3)", title: "Model performance", desc: "Active model version, readiness, and mean confidence at a glance." },
+                  { icon: "🩺", tint: "var(--u-doctor)", title: "Urgency mix", desc: "Distribution across Emergency → Self-care to spot triage drift over time." },
+                  { icon: "🔒", tint: "var(--u-self)", title: "Audit & data rights", desc: "Anonymous, session-scoped data with scheduled retention purges." },
+                ].map((c) => (
+                  <div key={c.title} className="glass cap-card">
+                    <span className="cap-icon" style={{ background: `${c.tint}1f`, color: c.tint }}>{c.icon}</span>
+                    <span className="cap-title">{c.title}</span>
+                    <span className="cap-desc">{c.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* trust strip */}
+          <div className="glass" style={{ padding: "1rem 1.25rem", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+            <div className="trust-strip">
+              <span className="trust-pill"><span style={{ color: "var(--u-routine)" }}>●</span> Rules-first safety</span>
+              <span className="trust-pill"><span style={{ color: "var(--accent-2)" }}>●</span> Escalate-only, never downgrades</span>
+              <span className="trust-pill"><span style={{ color: "var(--accent-3)" }}>●</span> Every decision audit-logged</span>
+              <span className="trust-pill"><span style={{ color: "var(--u-doctor)" }}>●</span> Urgency guidance, never a diagnosis</span>
+            </div>
+            <span style={{ fontSize: ".72rem", color: "var(--muted-2)" }}>Research/education prototype · Not HIPAA-compliant</span>
+          </div>
         </div>
       )}
 
@@ -145,13 +214,26 @@ export default function AdminPage() {
             </div>
           </section>
 
-          {/* Decision paths */}
-          <section className="glass rise rise-5" style={{ padding: "1.25rem" }}>
-            <p className="card-title">Decision-path distribution</p>
-            <p style={{ color: "var(--muted-2)", fontSize: ".78rem", margin: "0 0 .9rem" }}>
-              How each assessment was decided — red-flag rules escalate before the ML model; low confidence and errors route to a conservative fallback.
-            </p>
-            <BarList data={pathData} />
+          {/* Decision paths + clinical read */}
+          <section className="dash-grid rise rise-5" style={{ gridTemplateColumns: "minmax(0,1.4fr) minmax(0,1fr)" }}>
+            <div className="glass" style={{ padding: "1.25rem" }}>
+              <p className="card-title">Decision-path distribution</p>
+              <p style={{ color: "var(--muted-2)", fontSize: ".78rem", margin: "0 0 .9rem" }}>
+                How each assessment was decided — red-flag rules escalate before the ML model; low confidence and errors route to a conservative fallback.
+              </p>
+              <BarList data={pathData} />
+            </div>
+            <div className="glass" style={{ padding: "1.25rem" }}>
+              <p className="card-title">Clinical read</p>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: ".7rem" }}>
+                {clinicalRead(data).map((r) => (
+                  <li key={r.text} style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: ".6rem", alignItems: "start", fontSize: ".84rem", lineHeight: 1.45 }}>
+                    <span aria-hidden style={{ color: r.tone, marginTop: 1 }}>●</span>
+                    <span style={{ color: "var(--text)" }}>{r.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
 
           <p style={{ color: "var(--muted-2)", fontSize: ".72rem", textAlign: "center", marginTop: ".5rem" }}>

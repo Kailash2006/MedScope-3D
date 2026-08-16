@@ -275,6 +275,17 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 .ecg-scroll { animation: ecgScroll 2.4s linear infinite; will-change: transform; }
 @media (prefers-reduced-motion: reduce) { .ecg-scroll { animation: none; } }
 
+/* restricted-state gateway */
+.gate-grid { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+@media (max-width: 900px) { .gate-grid { grid-template-columns: 1fr; } }
+.cap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .8rem; }
+.cap-card { padding: 1rem; display: grid; gap: .35rem; align-content: start; }
+.cap-icon { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 1.05rem; margin-bottom: .2rem; }
+.cap-title { font-weight: 600; font-size: .92rem; }
+.cap-desc { font-size: .8rem; color: var(--muted); line-height: 1.45; }
+.trust-strip { display: flex; flex-wrap: wrap; gap: .5rem; }
+.trust-pill { font-size: .74rem; color: var(--muted); padding: .35rem .7rem; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,.02); display: inline-flex; align-items: center; gap: .4rem; }
+
 /* ---------- layout ---------- */
 .shell { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
 .triage-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr) 340px; gap: 1.25rem; align-items: start; }
