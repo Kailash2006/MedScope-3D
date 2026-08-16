@@ -261,6 +261,20 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 .sel-check { color: var(--accent); font-size: 0.85rem; }
 @media (prefers-reduced-motion: reduce) { .sel-list { animation: none; } }
 
+/* ---------- admin dashboard ---------- */
+.dash-grid { display: grid; gap: 1rem; }
+.stat { position: relative; padding: 1rem 1.1rem; overflow: hidden; }
+.stat-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.stat-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.stat-value { font-size: 1.85rem; font-weight: 700; line-height: 1.1; margin-top: 0.35rem; letter-spacing: -0.02em; }
+.stat-sub { font-size: 0.72rem; color: var(--muted-2); margin-top: 0.15rem; }
+
+.ecg { width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.ecg svg { display: block; filter: drop-shadow(0 0 4px currentColor); }
+@keyframes ecgScroll { from { transform: translateX(0); } to { transform: translateX(-150px); } }
+.ecg-scroll { animation: ecgScroll 2.4s linear infinite; will-change: transform; }
+@media (prefers-reduced-motion: reduce) { .ecg-scroll { animation: none; } }
+
 /* ---------- layout ---------- */
 .shell { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
 .triage-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr) 340px; gap: 1.25rem; align-items: start; }
