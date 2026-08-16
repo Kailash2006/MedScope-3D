@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { URGENCY_LEVELS, labelOf, type UrgencyLevel } from "@medscope/triage-shared";
 import { urgencyColor } from "../lib/urgency";
 
-const OrbScene = dynamic(() => import("../components/three/OrbScene"), {
+const MedicalHero = dynamic(() => import("../components/three/MedicalHero"), {
   ssr: false,
   loading: () => <div style={{ height: "100%", display: "grid", placeItems: "center", color: "var(--muted)" }}>Loading 3D…</div>,
 });
@@ -45,9 +45,9 @@ export default function Home() {
         </div>
 
         <div className="rise rise-3" style={{ height: 560, overflow: "hidden", position: "relative", borderRadius: "var(--radius)", background: "radial-gradient(120% 90% at 62% 42%, rgba(90,208,255,0.10), transparent 58%), radial-gradient(80% 60% at 30% 80%, rgba(139,92,246,0.10), transparent 60%), #04070f", boxShadow: "inset 0 0 0 1px var(--border), var(--shadow)" }}>
-          <OrbScene />
+          <MedicalHero />
           <p style={{ position: "absolute", bottom: 14, left: 0, right: 0, textAlign: "center", color: "var(--muted-2)", fontSize: ".72rem", letterSpacing: ".14em", textTransform: "uppercase", margin: 0, pointerEvents: "none" }}>
-            Medical intelligence · private by design
+            Live body scan · heartbeat · genomic signals
           </p>
         </div>
       </div>
