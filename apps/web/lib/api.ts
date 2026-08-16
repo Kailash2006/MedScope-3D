@@ -68,6 +68,23 @@ export async function adminDashboard(token?: string): Promise<Record<string, unk
   return json<Record<string, unknown>>(res);
 }
 
+export interface ExtractResult {
+  symptoms: { code: string; severity: number; duration_hours: number | null }[];
+  regions: string[];
+  risk_factors: string[];
+  vitals: Record<string, number>;
+  detected: { severity: number; duration_hours: number | null; count: number };
+}
+
+export async function extractSymptoms(text: string): Promise<ExtractResult> {
+  const res = await fetch(`${API_BASE}/api/v1/nlp/extract`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  return json<ExtractResult>(res);
+}
+
 export async function exportSession(id: string): Promise<unknown> {
   return json<unknown>(await fetch(`${API_BASE}/api/v1/sessions/${id}/export`));
 }

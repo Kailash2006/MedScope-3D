@@ -5,6 +5,7 @@ import { BodyMapper } from "../../components/BodyMapper";
 import { DataRightsPanel } from "../../components/DataRightsPanel";
 import { HistoryPanel } from "../../components/HistoryPanel";
 import { IntakeConsole } from "../../components/IntakeConsole";
+import { NLSymptomInput } from "../../components/NLSymptomInput";
 import { RiskPanel } from "../../components/RiskPanel";
 import { AuthNav } from "../../components/AuthNav";
 import { createSession, sessionWsUrl } from "../../lib/api";
@@ -85,6 +86,7 @@ export default function TriagePage() {
         <BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} />
 
         <div style={{ display: "grid", gap: "1rem" }}>
+          <div className="rise rise-1 reveal-3d"><NLSymptomInput dispatch={dispatch} /></div>
           <div className="rise rise-2 reveal-3d"><IntakeConsole state={state} dispatch={dispatch} /></div>
           <div className="reveal-3d"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
           <div className="reveal-3d">
