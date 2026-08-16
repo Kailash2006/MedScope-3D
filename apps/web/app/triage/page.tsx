@@ -7,7 +7,7 @@ import { HistoryPanel } from "../../components/HistoryPanel";
 import { IntakeConsole } from "../../components/IntakeConsole";
 import { NLSymptomInput } from "../../components/NLSymptomInput";
 import { RiskPanel } from "../../components/RiskPanel";
-import { AuthNav } from "../../components/AuthNav";
+import { TopNav } from "../../components/TopNav";
 import { createSession, sessionWsUrl } from "../../lib/api";
 import { reducer, toPatch } from "../../lib/triageState";
 import { emptyState, type Assessment } from "../../lib/types";
@@ -61,20 +61,15 @@ export default function TriagePage() {
 
   return (
     <main id="main" className="shell">
-      <header className="rise rise-1" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
-        <div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: ".5rem", fontSize: ".7rem", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)", marginBottom: ".5rem" }}>
-            <span className="live-dot" style={{ background: "var(--accent)" }} /> MedScope 3D
-          </div>
-          <h1 style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.5rem)", margin: 0 }}>
-            <span className="gradient-text">Interactive 3D Symptom Triage</span>
-          </h1>
-          <p style={{ color: "var(--muted)", margin: ".35rem 0 0", maxWidth: 560 }}>
-            Select body regions on the 3D model, add symptoms and vitals, and get live urgency guidance — never a diagnosis.
-          </p>
-        </div>
-        <AuthNav />
-      </header>
+      <TopNav active="triage" />
+      <div className="rise rise-1" style={{ marginBottom: "1.25rem" }}>
+        <h1 style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)", margin: 0 }}>
+          <span className="gradient-text">Symptom Triage</span>
+        </h1>
+        <p style={{ color: "var(--muted)", margin: ".3rem 0 0", maxWidth: 620, fontSize: ".95rem" }}>
+          Describe or select symptoms on the 3D model and get live urgency guidance — never a diagnosis.
+        </p>
+      </div>
 
       {error && (
         <div role="alert" className="glass rise" style={{ borderColor: "rgba(251,90,104,0.5)", color: "#ffb4bb", padding: ".8rem 1.1rem", marginBottom: "1rem" }}>
