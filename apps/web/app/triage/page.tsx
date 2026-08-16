@@ -6,6 +6,7 @@ import { DataRightsPanel } from "../../components/DataRightsPanel";
 import { HistoryPanel } from "../../components/HistoryPanel";
 import { IntakeConsole } from "../../components/IntakeConsole";
 import { NLSymptomInput } from "../../components/NLSymptomInput";
+import { RedFlagQuestions } from "../../components/RedFlagQuestions";
 import { RiskPanel } from "../../components/RiskPanel";
 import { SessionSummary } from "../../components/SessionSummary";
 import { TopNav } from "../../components/TopNav";
@@ -83,6 +84,7 @@ export default function TriagePage() {
         <div style={{ display: "grid", gap: "1rem" }}>
           <div className="rise rise-1"><SessionSummary state={state} /></div>
           <div className="rise rise-2"><NLSymptomInput dispatch={dispatch} /></div>
+          <RedFlagQuestions state={state} dispatch={dispatch} />
           <div className="rise rise-3"><IntakeConsole state={state} dispatch={dispatch} /></div>
         </div>
 
