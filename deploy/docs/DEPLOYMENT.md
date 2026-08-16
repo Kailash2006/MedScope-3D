@@ -73,6 +73,60 @@ python -m medscope_ml.train        # writes ml/artifacts/model_v1.0.0.joblib
 
 (Or run `ml/notebooks/medscope_kaggle_train.ipynb` on a 2-GPU Kaggle host.)
 
+## Production (cloud / server host)
+
+Use **`deploy/docker-compose.prod.yml`** — it hardens the dev stack: db/redis have
+no published ports, web/api bind to `127.0.0.1` (front them with a TLS proxy),
+Alembic runs before the API starts, and the web bundle is built with your **real**
+public URLs.
+
+### 1. Reverse proxy + TLS (you provide)
+Run nginx / Caddy / Traefik on the host, terminate TLS, and route:
+
+| Public origin | → forwards to | Notes |
+|---|---|---|
+| `https://app.example.com` | `127.0.0.1:3000` (web) | your users' entry point |
+| `https://api.example.com` | `127.0.0.1:8000` (api) | must also upgrade **WebSocket** (`/ws/...`) → `wss://` |
+
+The API origin must be publicly reachable by the browser (the frontend calls it
+directly) and must proxy WebSocket upgrades.
+
+### 2. `.env` (production values)
+```
+POSTGRES_PASSWORD=<strong-unique>
+SESSION_SECRET=<random >=32 chars>            # IP-hash salt
+ADMIN_TOKEN=<strong>                          # empty => /admin disabled (403)
+CORS_ORIGINS=https://app.example.com          # your web origin(s)
+PUBLIC_API_URL=https://api.example.com        # baked into web at build time
+PUBLIC_WS_URL=wss://api.example.com           # baked into web at build time
+ML_ARTIFACT_HOST_DIR=../ml/artifacts          # where the .joblib lives on this host
+```
+`PUBLIC_API_URL` / `PUBLIC_WS_URL` are **compiled into the web bundle at build
+time** (Next.js `NEXT_PUBLIC_*`). If you change them, rebuild the web image
+(`--build`). This is why the dev image cannot be reused unchanged in prod — a
+dev build hard-codes `localhost:8000`.
+
+### 3. Model artifact
+`ml/artifacts/*.joblib` is **gitignored**, so a fresh clone has no model and the
+API will run **rules-only** (safe, but no ML). Copy the trained
+`model_*.joblib` onto the server at `ML_ARTIFACT_HOST_DIR` before starting, or
+point that var at wherever you stage it.
+
+### 4. Launch
+```bash
+docker compose -f deploy/docker-compose.prod.yml up -d --build
+# verify
+curl -s http://127.0.0.1:8000/healthz
+curl -s http://127.0.0.1:8000/readyz     # confirm model.ready + model_version
+```
+
+### 5. Scaling caveats (single-host defaults)
+- **One API replica.** The rate limiter (`app/ratelimit.py`) is in-process; the WS
+  manager broadcasts in-process unless Redis is wired for pub/sub. For multiple API
+  replicas, put both on Redis and add sticky sessions at the proxy.
+- Back up the `db_data` volume; never expose Postgres/Redis publicly (this file
+  already keeps them off the host network).
+
 ## Local dev without Docker
 
 ```bash

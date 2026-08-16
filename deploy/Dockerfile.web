@@ -12,6 +12,14 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY package.json package-lock.json* ./
 COPY packages ./packages
 COPY apps ./apps
+# Public API/WS URLs are INLINED into the client bundle at build time by Next.js
+# (NEXT_PUBLIC_*). They must be set here, not at runtime. Defaults keep local dev
+# working; a cloud deploy passes its real https/wss origin via --build-arg
+# (see deploy/docker-compose.prod.yml).
+ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+ARG NEXT_PUBLIC_WS_BASE_URL=ws://localhost:8000
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_WS_BASE_URL=$NEXT_PUBLIC_WS_BASE_URL
 RUN npm run build --workspace apps/web
 
 FROM node:20-slim AS run
