@@ -10,12 +10,21 @@ import { RedFlagQuestions } from "../../components/RedFlagQuestions";
 import { RiskPanel } from "../../components/RiskPanel";
 import { SessionSummary } from "../../components/SessionSummary";
 import { TopNav } from "../../components/TopNav";
+import { AuthGuard } from "../../components/AuthGuard";
 import { createSession, sessionWsUrl } from "../../lib/api";
 import { reducer, toPatch } from "../../lib/triageState";
 import { emptyState, type Assessment } from "../../lib/types";
 import { TriageSocket, type SocketStatus } from "../../lib/ws";
 
 export default function TriagePage() {
+  return (
+    <AuthGuard>
+      <TriageConsole />
+    </AuthGuard>
+  );
+}
+
+function TriageConsole() {
   const [state, dispatch] = useReducer(reducer, undefined, emptyState);
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [status, setStatus] = useState<SocketStatus>("connecting");

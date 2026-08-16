@@ -16,8 +16,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     setError(null);
     try {
       const user = isRegister ? await register(email, password) : await login(email, password);
-      // Send admins to the dashboard, everyone else to triage.
-      window.location.href = user.role === "admin" ? "/admin" : "/triage";
+      // Return to the page they came from (?next=), else admins -> dashboard, users -> triage.
+      const next = new URLSearchParams(window.location.search).get("next");
+      const dest = next && next.startsWith("/") ? next : user.role === "admin" ? "/admin" : "/triage";
+      window.location.href = dest;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setBusy(false);
