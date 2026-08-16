@@ -7,6 +7,7 @@ import { HistoryPanel } from "../../components/HistoryPanel";
 import { IntakeConsole } from "../../components/IntakeConsole";
 import { NLSymptomInput } from "../../components/NLSymptomInput";
 import { RiskPanel } from "../../components/RiskPanel";
+import { SessionSummary } from "../../components/SessionSummary";
 import { TopNav } from "../../components/TopNav";
 import { createSession, sessionWsUrl } from "../../lib/api";
 import { reducer, toPatch } from "../../lib/triageState";
@@ -78,11 +79,14 @@ export default function TriagePage() {
       )}
 
       <div className="triage-grid">
-        <BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} />
+        {/* Left: live session summary (patient-chart style) */}
+        <div className="rise rise-1"><SessionSummary state={state} /></div>
 
+        {/* Center: the 3D body is the centrepiece, with entry below it */}
         <div style={{ display: "grid", gap: "1rem" }}>
-          <div className="rise rise-1 reveal-3d"><NLSymptomInput dispatch={dispatch} /></div>
-          <div className="rise rise-2 reveal-3d"><IntakeConsole state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-2"><BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} /></div>
+          <div className="rise rise-3"><NLSymptomInput dispatch={dispatch} /></div>
+          <div className="reveal-3d"><IntakeConsole state={state} dispatch={dispatch} /></div>
           <div className="reveal-3d"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
           <div className="reveal-3d">
             <DataRightsPanel
@@ -92,6 +96,7 @@ export default function TriagePage() {
           </div>
         </div>
 
+        {/* Right: urgency guidance / result */}
         <RiskPanel assessment={assessment} status={status} saved={saved} />
       </div>
     </main>

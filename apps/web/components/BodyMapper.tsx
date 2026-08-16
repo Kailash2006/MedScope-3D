@@ -33,7 +33,7 @@ export function BodyMapper({ selected, onToggle, urgency }: Props) {
   }, []);
 
   return (
-    <section aria-labelledby="mapper-heading" className="glass rise rise-2" style={{ padding: "1.1rem", position: "sticky", top: "1rem" }}>
+    <section aria-labelledby="mapper-heading" className="glass" style={{ padding: "1.1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".75rem" }}>
         <div>
           <p className="card-title" style={{ margin: 0 }}>Body map</p>
@@ -48,11 +48,11 @@ export function BodyMapper({ selected, onToggle, urgency }: Props) {
       <div
         className="glass-inset"
         style={{
-          height: 420,
+          height: 520,
           position: "relative",
           overflow: "hidden",
           background:
-            "radial-gradient(120% 90% at 50% 0%, rgba(56,189,248,0.10), transparent 55%), rgba(4,9,18,0.6)",
+            "radial-gradient(120% 90% at 50% 0%, rgba(47,107,255,0.12), transparent 55%), #0b0e13",
         }}
       >
         {use3D ? (
