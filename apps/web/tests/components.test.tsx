@@ -24,7 +24,7 @@ describe("SvgBodyMap", () => {
     const onToggle = vi.fn();
     render(<SvgBodyMap selected={[]} onToggle={onToggle} />);
     expect(screen.getByRole("img")).toHaveAttribute("aria-label", expect.stringContaining("Body map"));
-    await userEvent.click(screen.getByText("Head").closest("rect")!);
+    await userEvent.click(screen.getByText("Head").parentElement!);
     expect(onToggle).toHaveBeenCalledWith("head");
   });
 });
