@@ -79,14 +79,19 @@ export default function TriagePage() {
       )}
 
       <div className="triage-grid">
-        {/* Left: live session summary (patient-chart style) */}
-        <div className="rise rise-1"><SessionSummary state={state} /></div>
-
-        {/* Center: the 3D body is the centrepiece, with entry below it */}
+        {/* Left: live session summary + data entry */}
         <div style={{ display: "grid", gap: "1rem" }}>
-          <div className="rise rise-2"><BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} /></div>
-          <div className="rise rise-3"><NLSymptomInput dispatch={dispatch} /></div>
-          <div className="reveal-3d"><IntakeConsole state={state} dispatch={dispatch} /></div>
+          <div className="rise rise-1"><SessionSummary state={state} /></div>
+          <div className="rise rise-2"><NLSymptomInput dispatch={dispatch} /></div>
+          <div className="rise rise-3"><IntakeConsole state={state} dispatch={dispatch} /></div>
+        </div>
+
+        {/* Center: the 3D body — the sole centrepiece */}
+        <div className="rise rise-2"><BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} /></div>
+
+        {/* Right: urgency guidance + records */}
+        <div style={{ display: "grid", gap: "1rem" }}>
+          <RiskPanel assessment={assessment} status={status} saved={saved} />
           <div className="reveal-3d"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
           <div className="reveal-3d">
             <DataRightsPanel
@@ -95,9 +100,6 @@ export default function TriagePage() {
             />
           </div>
         </div>
-
-        {/* Right: urgency guidance / result */}
-        <RiskPanel assessment={assessment} status={status} saved={saved} />
       </div>
     </main>
   );

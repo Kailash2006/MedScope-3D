@@ -30,7 +30,7 @@ export function SessionSummary({ state }: { state: TriageState }) {
   const nothing = !state.age && !state.sex && state.symptoms.length === 0 && state.regions.length === 0 && state.riskFactors.length === 0 && vitals.length === 0;
 
   return (
-    <aside className="glass" style={{ padding: "1.2rem", position: "sticky", top: "1rem", display: "grid", gap: "1.1rem" }} aria-label="Session summary">
+    <aside className="glass" style={{ padding: "1.2rem", display: "grid", gap: "1.1rem" }} aria-label="Session summary">
       <div style={{ display: "flex", alignItems: "center", gap: ".7rem" }}>
         <span aria-hidden style={{ width: 42, height: 42, borderRadius: 12, background: "var(--accent)", display: "grid", placeItems: "center", color: "#fff", fontSize: "1.2rem", flexShrink: 0 }}>◍</span>
         <div>
