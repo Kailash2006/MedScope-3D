@@ -1,0 +1,6 @@
+# Shell scripts and Dockerfiles must stay LF — CRLF breaks the shebang / parsing
+# inside Linux containers (e.g. the API entrypoint would fail with "not found").
+*.sh            text eol=lf
+Dockerfile*     text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
