@@ -127,6 +127,59 @@ curl -s http://127.0.0.1:8000/readyz     # confirm model.ready + model_version
 - Back up the `db_data` volume; never expose Postgres/Redis publicly (this file
   already keeps them off the host network).
 
+## Managed split: Vercel (web) + Render (api) + Neon (db)
+
+Vercel cannot host the API (no WebSockets, no long-running process, 72 MB model),
+so the web app goes to Vercel and the API to Render (Docker + WebSockets + a
+persistent process). Free tiers throughout.
+
+### 1. Database — Neon (free Postgres)
+Create a project at neon.tech, copy the connection string, and convert it to the
+psycopg driver form the API expects:
+```
+postgresql+psycopg://USER:PASSWORD@ep-xxx.REGION.aws.neon.tech/DBNAME?sslmode=require
+```
+(Keep `?sslmode=require`; Neon needs TLS.) This becomes `DATABASE_URL` on Render.
+
+### 2. API — Render (Blueprint)
+`render.yaml` (repo root) defines the service. Render Dashboard → **New →
+Blueprint** → pick the repo. Then set the secret env vars in the Render UI:
+
+| Var | Value |
+|---|---|
+| `DATABASE_URL` | the Neon URL above |
+| `SESSION_SECRET` | random ≥32 chars |
+| `ADMIN_TOKEN` | strong value (empty ⇒ `/admin` disabled) |
+| `CORS_ORIGINS` | your Vercel origin, e.g. `https://medscope.vercel.app` |
+| `MODEL_URL` | *(optional)* https URL to the `.joblib` — omit to run **rules-only** |
+
+Deploy. Health check is `/healthz`. Note the URL: `https://<name>.onrender.com`.
+
+**Shipping the ML model (optional).** The `.joblib` is gitignored, so Render's
+build has no model and runs rules-only by default (safe). To include it, upload
+`model_v2.1.0-real-appcompat.joblib` as a **GitHub Release asset** (Releases →
+draft → attach file → the asset gets a public https URL) and set that URL as
+`MODEL_URL`. The entrypoint downloads it on boot. Verify with
+`curl https://<name>.onrender.com/readyz` → `model.ready: true`.
+
+### 3. Web — Vercel
+Vercel Dashboard → **Add New → Project** → import the repo, then:
+- **Root Directory:** `apps/web` (Vercel auto-detects Next.js; the shared package
+  is consumed as source via `transpilePackages`, so no extra build step).
+- **Environment Variables (Production):**
+  - `NEXT_PUBLIC_API_BASE_URL` = `https://<name>.onrender.com`
+  - `NEXT_PUBLIC_WS_BASE_URL` = `wss://<name>.onrender.com`
+  (These are inlined at build time — after changing them, redeploy.)
+- Deploy. Your app is at `https://<project>.vercel.app`.
+
+### 4. Close the loop
+Set Render's `CORS_ORIGINS` to the exact Vercel URL and redeploy the API.
+Open the Vercel URL → `/triage`; the browser calls Render over `https`/`wss`.
+
+**Free-tier caveats:** Render free spins down when idle (first request cold-starts,
+slower if `MODEL_URL` downloads the model on boot); Neon free may auto-suspend
+compute (first query wakes it). Fine for a demo; upgrade either tier to keep warm.
+
 ## Local dev without Docker
 
 ```bash

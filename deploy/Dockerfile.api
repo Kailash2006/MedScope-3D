@@ -27,11 +27,18 @@ RUN pip install --no-cache-dir /app/services/api
 COPY services/api/alembic.ini /app/services/api/alembic.ini
 COPY services/api/alembic /app/services/api/alembic
 
-# Model artifacts are mounted at runtime (see docker-compose). Empty dir => the
-# PredictionService stays not-ready and the engine falls back conservatively.
+# Model artifacts are mounted at runtime (compose) OR fetched at start via
+# MODEL_URL (managed hosts like Render). Empty dir => PredictionService stays
+# not-ready and the engine falls back conservatively (safe, rules-only).
 ENV ML_ARTIFACT_DIR=/app/ml/artifacts
 RUN mkdir -p /app/ml/artifacts
 
+# Entrypoint: optional model download + bind to $PORT (Render/Fly) or 8000.
+COPY deploy/api-entrypoint.sh /app/deploy/api-entrypoint.sh
+RUN chmod +x /app/deploy/api-entrypoint.sh
+
 WORKDIR /app/services/api
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# CMD (not ENTRYPOINT) so compose can override it (e.g. the prod `migrate`
+# service runs `alembic upgrade head` instead).
+CMD ["/app/deploy/api-entrypoint.sh"]

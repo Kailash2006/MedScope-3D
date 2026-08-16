@@ -1,0 +1,58 @@
+# Render Blueprint — MedScope 3D API (FastAPI backend).
+#
+# Deploys ONLY the backend. The frontend goes to Vercel; the database is Neon.
+# Render web services support WebSockets + a persistent process (unlike Vercel),
+# which is why the API lives here.
+#
+# Setup:
+#   1) Push this repo to GitHub.
+#   2) Render Dashboard → New → Blueprint → pick this repo. It reads render.yaml.
+#   3) Fill the env vars marked `sync: false` (secrets) in the Render UI:
+#        DATABASE_URL   Neon pooled URL, e.g.
+#                       postgresql+psycopg://USER:PASS@ep-xxx.REGION.aws.neon.tech/DB?sslmode=require
+#        SESSION_SECRET random >=32 chars
+#        ADMIN_TOKEN    strong value (empty => /admin disabled)
+#        CORS_ORIGINS   your Vercel origin, e.g. https://medscope.vercel.app
+#        MODEL_URL      (optional) https URL to the .joblib (e.g. a GitHub Release
+#                       asset). Omit to run rules-only.
+#   4) Deploy. Health check is /healthz. Note the service URL
+#      (https://<name>.onrender.com) — you'll give it to Vercel.
+#
+# Free plan note: the instance spins down when idle; the first request after idle
+# cold-starts (slower if MODEL_URL is set, since the model downloads on boot).
+
+services:
+  - type: web
+    name: medscope-api
+    runtime: docker
+    dockerfilePath: ./deploy/Dockerfile.api
+    dockerContext: .
+    plan: free
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: REDIS_URL          # optional; unset => in-process WS/rate-limit (fine for 1 instance)
+        value: ""
+      - key: ML_ARTIFACT_DIR
+        value: /app/ml/artifacts
+      - key: PURGE_INTERVAL_SECONDS
+        value: "3600"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "120"
+      - key: DEFAULT_RETENTION_DAYS
+        value: "30"
+      - key: AUDIT_RETENTION_DAYS
+        value: "365"
+      # --- secrets: set these in the Render dashboard (not committed) ---
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: MODEL_URL           # optional; omit/blank => rules-only
+        sync: false
