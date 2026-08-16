@@ -33,7 +33,7 @@ export function BodyMapper({ selected, onToggle, urgency }: Props) {
   }, []);
 
   return (
-    <section aria-labelledby="mapper-heading" className="glass" style={{ padding: "1.1rem", position: "sticky", top: "1rem" }}>
+    <section aria-labelledby="mapper-heading" className="glass" style={{ padding: "1.1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".75rem" }}>
         <div>
           <p className="card-title" style={{ margin: 0 }}>Body map</p>

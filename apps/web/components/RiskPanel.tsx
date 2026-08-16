@@ -54,7 +54,7 @@ export function RiskPanel({ assessment, status, saved, state }: Props) {
   }
 
   return (
-    <aside className="risk-aside rise rise-3" aria-label="Urgency assessment" style={{ position: "sticky", top: "1rem", display: "grid", gap: ".7rem" }}>
+    <aside className="risk-aside rise rise-3" aria-label="Urgency assessment" style={{ display: "grid", gap: ".7rem" }}>
       <div className="glass" style={{ padding: "1.2rem", position: "relative", overflow: "hidden", borderColor: assessment ? `${color}55` : "var(--border)" }}>
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(90% 60% at 50% -10%, ${color}22, transparent 60%)`, pointerEvents: "none" }} />
 

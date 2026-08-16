@@ -94,8 +94,8 @@ export default function TriagePage() {
         {/* Right: urgency guidance + records */}
         <div style={{ display: "grid", gap: "1rem" }}>
           <RiskPanel assessment={assessment} status={status} saved={saved} state={state} />
-          <div className="reveal-3d"><HistoryPanel sessionId={sessionId} refreshKey={refreshKey} /></div>
-          <div className="reveal-3d">
+          <HistoryPanel sessionId={sessionId} refreshKey={refreshKey} />
+          <div>
             <DataRightsPanel
               sessionId={sessionId}
               onDeleted={() => { dispatch({ type: "reset" }); setSessionId(null); setSessionNonce((n) => n + 1); }}
