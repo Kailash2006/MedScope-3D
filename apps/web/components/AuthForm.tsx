@@ -27,7 +27,16 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   }
 
   return (
-    <main id="main" className="shell" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+    <main id="main" style={{ minHeight: "100vh", position: "relative", overflow: "hidden", display: "grid", placeItems: "center", padding: "1.5rem" }}>
+      {/* branded background */}
+      <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, background: "radial-gradient(760px 520px at 16% 22%, rgba(47,107,255,0.16), transparent 55%), radial-gradient(820px 620px at 84% 82%, rgba(47,107,255,0.10), transparent 55%), var(--bg)" }} />
+      <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: "linear-gradient(rgba(148,163,184,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.05) 1px, transparent 1px)", backgroundSize: "48px 48px", maskImage: "radial-gradient(circle at 50% 40%, black, transparent 75%)", WebkitMaskImage: "radial-gradient(circle at 50% 40%, black, transparent 75%)" }} />
+
+      {/* brand name — top-left corner */}
+      <a href="/" className="topnav-logo" style={{ position: "absolute", top: "1.5rem", left: "1.75rem", zIndex: 2 }}>
+        <span className="topnav-mark" aria-hidden>✳</span> MedScope
+      </a>
+
       <div className="glass rise" style={{ padding: "2rem", width: "min(420px, 92vw)", position: "relative", zIndex: 1 }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: ".5rem", fontSize: ".7rem", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)", marginBottom: ".6rem" }}>
           <span className="live-dot" style={{ background: "var(--accent)" }} /> MedScope 3D
