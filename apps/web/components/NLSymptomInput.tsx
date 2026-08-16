@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { extractSymptoms, type ExtractResult } from "../lib/api";
 import { humanize } from "../lib/vocab";
+import { useSpeech } from "../lib/speech";
 import type { Action } from "../lib/triageState";
 
 const EXAMPLES = [
@@ -16,6 +17,13 @@ export function NLSymptomInput({ dispatch }: { dispatch: (a: Action) => void }) 
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ExtractResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Voice input (browser Web Speech API — on-device, no keys). Transcribes into
+  // the box live and analyzes automatically when you stop speaking.
+  const speech = useSpeech(
+    (transcript) => setText(transcript),
+    (finalText) => { if (finalText.trim()) analyze(finalText); },
+  );
 
   async function analyze(input?: string) {
     const q = (input ?? text).trim();
@@ -70,6 +78,23 @@ export function NLSymptomInput({ dispatch }: { dispatch: (a: Action) => void }) 
           <button type="button" className="btn btn-primary" onClick={() => analyze()} disabled={busy || !text.trim()}>
             {busy ? "Reading…" : "✨ Analyze"}
           </button>
+          {speech.supported && (
+            <button
+              type="button"
+              className="btn"
+              onClick={() => (speech.listening ? speech.stop() : speech.start())}
+              aria-label={speech.listening ? "Stop voice input" : "Speak your symptoms"}
+              style={speech.listening
+                ? { borderColor: "rgba(251,90,104,0.6)", color: "#ffb4bb", display: "inline-flex", alignItems: "center", gap: ".4rem" }
+                : { display: "inline-flex", alignItems: "center", gap: ".4rem" }}
+            >
+              {speech.listening ? (
+                <><span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: "var(--u-emergency)", boxShadow: "0 0 10px var(--u-emergency)", animation: "haloPulse 1.2s ease-in-out infinite" }} /> Listening…</>
+              ) : (
+                <>🎤 Speak</>
+              )}
+            </button>
+          )}
           <span style={{ fontSize: ".72rem", color: "var(--muted-2)" }}>Runs privately — no third-party AI.</span>
         </div>
 
