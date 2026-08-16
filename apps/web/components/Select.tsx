@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 
 export interface SelectOption {
   value: string;
@@ -98,7 +99,7 @@ export function Select({
         </svg>
       </button>
 
-      {open && rect && (
+      {open && rect && typeof document !== "undefined" && createPortal(
         <ul
           ref={listRef}
           role="listbox"
@@ -121,7 +122,8 @@ export function Select({
               {o.value === value && <span className="sel-check" aria-hidden>✓</span>}
             </li>
           ))}
-        </ul>
+        </ul>,
+        document.body,
       )}
     </div>
   );
