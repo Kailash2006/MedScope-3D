@@ -81,7 +81,7 @@ export default function TriagePage() {
 
       <div className="triage-grid">
         {/* Left: live session summary + data entry */}
-        <div style={{ display: "grid", gap: "1rem" }}>
+        <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "minmax(0, 1fr)" }}>
           <div className="rise rise-1"><SessionSummary state={state} /></div>
           <div className="rise rise-2"><NLSymptomInput dispatch={dispatch} /></div>
           <RedFlagQuestions state={state} dispatch={dispatch} />
@@ -92,7 +92,7 @@ export default function TriagePage() {
         <div className="rise rise-2"><BodyMapper selected={state.regions} onToggle={(code) => dispatch({ type: "toggleRegion", code })} urgency={assessment?.urgency} /></div>
 
         {/* Right: urgency guidance + records */}
-        <div style={{ display: "grid", gap: "1rem" }}>
+        <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "minmax(0, 1fr)" }}>
           <RiskPanel assessment={assessment} status={status} saved={saved} state={state} />
           <HistoryPanel sessionId={sessionId} refreshKey={refreshKey} />
           <div>

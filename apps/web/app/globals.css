@@ -175,7 +175,7 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 }
 
 /* ---------- tabbed intake console ---------- */
-.intake { padding: 0; overflow: hidden; }
+.intake { padding: 0; overflow: hidden; min-width: 0; }
 .intake-rail {
   display: flex; gap: 3px; padding: 6px;
   border-bottom: 1px solid var(--border);
